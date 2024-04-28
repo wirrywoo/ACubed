@@ -4,7 +4,7 @@ setup(
     name='src',
     packages=find_packages(),
     version='0.1.0',
-    description='A Redesigned System to Improve',
+    description='A Redesigned System to Improve Skill Measurement in FlashFlashRevolution',
     author='Wilson Cheung',
     license='MIT',
 )
