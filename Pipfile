@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+src = {file = ".", editable = true}
+click = "*"
+sphinx = "*"
+coverage = "*"
+pylint = "*"
+pymongo = "==4.7.0"
+python-dotenv = ">=0.5.1"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
