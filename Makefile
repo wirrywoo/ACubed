@@ -26,7 +26,7 @@ requirements: test_environment
 
 ## Refresh MongoDB database with new data from FFR's API
 refresh_database: requirements
-	$(PYTHON_INTERPRETER) src/data/make_dataset.py
+	$(PYTHON_INTERPRETER) acubed/data/make_dataset.py
 
 ## Delete all compiled Python files
 clean:
@@ -35,7 +35,7 @@ clean:
 
 ## Lint using pylint
 lint:
-	pylint src
+	pylint acubed
 
 ## Set up acubed environment
 create_environment:
