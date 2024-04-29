@@ -4,15 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-src = {file = ".", editable = true}
+acubed = {file = ".", editable = true}
 click = "*"
 sphinx = "*"
 coverage = "*"
-pylint = "*"
 pymongo = "==4.7.0"
 python-dotenv = ">=0.5.1"
 
 [dev-packages]
+pylint = "*"
 
 [requires]
 python_version = "3.8"
