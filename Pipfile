@@ -8,6 +8,7 @@ acubed = {file = ".", editable = true}
 click = "*"
 sphinx = "*"
 coverage = "*"
+numpy = "*"
 pymongo = "==4.7.0"
 python-dotenv = ">=0.5.1"
 

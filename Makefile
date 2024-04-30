@@ -20,13 +20,9 @@ endif
 # COMMANDS                                                                      #
 #################################################################################
 
-## Install Python Dependencies
-requirements: test_environment
-	pipenv run $(PYTHON_INTERPRETER) -m pip install -U pip setuptools wheel
-
 ## Refresh MongoDB database with new data from FFR's API
-refresh_database: requirements
-	$(PYTHON_INTERPRETER) -m modules.main
+refresh_database: 
+	pipenv run $(PYTHON_INTERPRETER) -m modules.main
 
 ## Delete all compiled Python files
 clean:
@@ -42,8 +38,12 @@ lint:
 create_environment:
 	pipenv install
 
+## Remove acubed environment
+remove_environment:
+	pipenv --rm
+
 ## Test acubed environment is setup correctly
-test_environment: create_environment
+test_environment:
 	pipenv run $(PYTHON_INTERPRETER) test_environment.py
 
 #################################################################################

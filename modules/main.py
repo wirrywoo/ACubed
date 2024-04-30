@@ -2,16 +2,14 @@
 import os
 import logging
 
+from acubed.preprocessing import FFRChartPreprocesser, SMChartPreprocesser
 from dotenv import find_dotenv, dotenv_values
-
-from acubed.preprocessing import FFRChartPreprocesser
-
 
 def main(config):
     """ Runs data processing scripts to turn raw data from (../raw) into
         cleaned data ready to be analyzed (saved in ../processed).
     """
-    print(FFRChartPreprocesser)
+    print(SMChartPreprocesser)
     print(config)
 
     logger = logging.getLogger(__name__)
