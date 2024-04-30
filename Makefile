@@ -26,12 +26,13 @@ requirements: test_environment
 
 ## Refresh MongoDB database with new data from FFR's API
 refresh_database: requirements
-	$(PYTHON_INTERPRETER) acubed/data/make_dataset.py
+	$(PYTHON_INTERPRETER) -m modules.main
 
 ## Delete all compiled Python files
 clean:
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
+	find . -type d -name '*.egg-info' -exec rm -r {} +
 
 ## Lint using pylint
 lint:
