@@ -1,7 +1,11 @@
-import numpy as np
+"""Module providing preprocessing functions to standardize stepfile data inputs."""
+
 import re
+import numpy as np
 
 class FFRChartPreprocesser():
+
+    # pylint: disable=too-few-public-methods 
 
     """Preprocesses FFR API response to a dictionary in following format:
     {
@@ -25,6 +29,7 @@ class FFRChartPreprocesser():
         }
 
     def preprocess(self, chart_data):
+        """Preprocesses raw data from FFR API."""
         raw_data = chart_data.copy()
         chart = self._zero_framer_preprocessing(chart_data)
         chart = self._map_encodings(chart)
@@ -42,6 +47,7 @@ class FFRChartPreprocesser():
         }
 
     def _aggregate_steps(self, sorted_chart):
+        """Combines two single steps at same timestamp into one chord (jump, hand, quad)"""
         row_mask = np.append(np.diff(sorted_chart[:,0],axis=0)!=0,[True])
         group_cumulative_sums = sorted_chart.cumsum(0)[row_mask,1:]
         group_sums = np.diff(group_cumulative_sums,axis=0)
@@ -49,12 +55,14 @@ class FFRChartPreprocesser():
         return np.concatenate((sorted_chart[row_mask,0][:,None],counts),axis=1)
 
     def _map_encodings(self, chart):
+        """Map orientation of steps into its binary string representation"""
         (orientations, encoding_indices) = np.unique(chart[:, 0], return_inverse=True)
         chart[:, 0] = np.array([*map(
             self.encoding_mappings.get, orientations)])[encoding_indices]
         return np.flip(chart.astype(float), axis = 1)
 
     def _zero_framer_preprocessing(self, chart_data):
+        """Addresses zero framers by adding 1 ms noise to timestamp"""
         sorted_chart = chart_data['chart']
         sorted_chart.sort(key = self._get_step_attributes)
         sorted_chart = np.array(sorted_chart)
@@ -64,6 +72,7 @@ class FFRChartPreprocesser():
         return np.array(sorted_chart)[:, 1::2]
 
     def _get_step_attributes(self, step):
+        """Retrieve step attributes"""
         return tuple(step[:2])
 
 class SMChartPreprocesser():
@@ -84,7 +93,11 @@ class SMChartPreprocesser():
         self.notes, self.timings, self.chart = [], {}, {}
 
     def preprocess(self, path):
-        with open(path, 'r') as sm_file:
+        """Preprocesses raw data from .sm file."""
+
+        # pylint: disable=too-many-locals
+
+        with open(path, 'r', encoding="utf-8") as sm_file:
             content = self.multiple_replace(self.regex_dictionary, sm_file.read())
 
         for line in content.split('\n'):
@@ -109,7 +122,7 @@ class SMChartPreprocesser():
             beat = np.round(np.linspace(4*i, 4*(i+1), num=len(measure), endpoint=False), 3)
             for key, value in zip(beat, measure):
                 if value != '0000':
-                    if not len(self.chart):
+                    if not self.chart:
                         min_time = time
                     self.chart[key] = {'time': time - min_time, 'step': value}
                 _bpm = {v: k for k, v in self.timings['bpm'].items() if k <= key}
@@ -117,6 +130,7 @@ class SMChartPreprocesser():
                 time += 240./ (len(measure) * bpm)
         return {'chart': list(self.chart.values()), 'difficulty': None}
 
-    def multiple_replace(self, dict, text):
-        regex = re.compile("(%s)" % "|".join(map(re.escape, dict.keys())))
-        return regex.sub(lambda mo: dict[mo.string[mo.start():mo.end()]], text)
+    def multiple_replace(self, d, text):
+        """Utility function to perform simultaneous replacements"""
+        regex = re.compile(f"({'|'.join(map(re.escape, d.keys()))})")
+        return regex.sub(lambda mo: d[mo.string[mo.start():mo.end()]], text)
