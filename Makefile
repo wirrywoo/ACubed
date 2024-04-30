@@ -20,6 +20,10 @@ endif
 # COMMANDS                                                                      #
 #################################################################################
 
+## Standardize line endings in project to LF
+resolve_line_endings:
+	find . -type f -exec dos2unix {} \;
+
 ## Refresh MongoDB database with new data from FFR's API
 refresh_database: 
 	pipenv run $(PYTHON_INTERPRETER) -m modules.main
@@ -94,7 +98,7 @@ help:
 	| LC_ALL='C' sort --ignore-case \
 	| awk -F '---' \
 		-v ncol=$$(tput cols) \
-		-v indent=19 \
+		-v indent=30 \
 		-v col_on="$$(tput setaf 6)" \
 		-v col_off="$$(tput sgr0)" \
 	'{ \
