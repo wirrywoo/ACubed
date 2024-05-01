@@ -36,7 +36,7 @@ clean:
 
 ## Lint using pylint
 lint:
-	pipenv run pylint acubed
+	pipenv run pylint acubed modules
 
 ## Set up acubed environment
 create_environment:
