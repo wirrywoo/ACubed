@@ -5,7 +5,7 @@ import numpy as np
 
 class FFRChartPreprocesser():
 
-    # pylint: disable=too-few-public-methods 
+    # pylint: disable=too-few-public-methods
 
     """Preprocesses FFR API response to a dictionary in following format:
     {
