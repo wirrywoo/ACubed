@@ -26,7 +26,7 @@ resolve_line_endings:
 
 ## Refresh MongoDB database with new data from FFR's API
 refresh_database: 
-	pipenv run $(PYTHON_INTERPRETER) -m modules.main
+	pipenv run $(PYTHON_INTERPRETER) -m scripts.main
 
 ## Delete all compiled Python files
 clean:
@@ -36,7 +36,7 @@ clean:
 
 ## Lint using pylint
 lint:
-	pipenv run pylint acubed modules
+	pipenv run pylint acubed scripts
 
 ## Set up acubed environment
 create_environment:
