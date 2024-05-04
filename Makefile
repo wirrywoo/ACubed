@@ -36,7 +36,7 @@ clean:
 
 ## Lint using pylint
 lint:
-	pipenv run pylint acubed scripts
+	pipenv run pylint acubed scripts fastapi streamlit
 
 ## Set up acubed environment
 create_environment:
@@ -49,6 +49,14 @@ remove_environment:
 ## Test acubed environment is setup correctly
 test_environment:
 	pipenv run $(PYTHON_INTERPRETER) test_environment.py
+
+## Initialize ACubed API
+start_api:
+	pipenv run fastapi run ./fastapi/server.py
+
+## Initialize ACubed UI
+start_app:
+	pipenv run ./streamlit/start.sh
 
 #################################################################################
 # PROJECT RULES                                                                 #
