@@ -1,24 +1,32 @@
-import io
+"""Module to initialize and configure FastAPI"""
 
-from segmentation import get_segmentator, get_segments
-from starlette.responses import Response
+# pylint: disable=no-name-in-module
 
-from fastapi import FastAPI, File
-
-model = get_segmentator()
+from dotenv import find_dotenv, dotenv_values
+from acubed.preprocessing import FFRChartPreprocesser
+from fastapi import FastAPI
 
 app = FastAPI(
-    title="DeepLabV3 image segmentation",
-    description="""Obtain semantic segmentation maps of the image in input via DeepLabV3 implemented in PyTorch.
+    title="ACubed",
+    description="""A Redesigned System to Improve Skill Measurement in FlashFlashRevolution.
                            Visit this URL at port 8501 for the streamlit interface.""",
     version="0.1.0",
 )
 
+@app.get("/")
+async def root():
+    """Main FastAPI function"""
+    config = {
+        **dotenv_values(find_dotenv())
+    }
+    print(FFRChartPreprocesser)
+    return config
 
-@app.post("/segmentation")
-def get_segmentation_map(file: bytes = File(...)):
-    """Get segmentation maps from image file"""
-    segmented_image = get_segments(model, file)
-    bytes_io = io.BytesIO()
-    segmented_image.save(bytes_io, format="PNG")
-    return Response(bytes_io.getvalue(), media_type="image/png")
+
+# @app.post("/segmentation")
+# def get_segmentation_map(file: bytes = File(...)):
+#     """Get segmentation maps from image file"""
+#     segmented_image = get_segments(model, file)
+#     bytes_io = io.BytesIO()
+#     segmented_image.save(bytes_io, format="PNG")
+#     return Response(bytes_io.getvalue(), media_type="image/png")

@@ -11,6 +11,8 @@ coverage = "*"
 numpy = "*"
 pymongo = "==4.7.0"
 python-dotenv = ">=0.5.1"
+fastapi = "*"
+streamlit = "*"
 
 [dev-packages]
 pylint = "*"
