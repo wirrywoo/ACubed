@@ -3,8 +3,8 @@
 # pylint: disable=no-name-in-module
 
 from dotenv import find_dotenv, dotenv_values
-from acubed.preprocessing import FFRChartPreprocesser
-from fastapi import FastAPI
+from acubed.preprocessing import FFRChartPreprocessor, SMChartPreprocessor
+from fastapi import FastAPI, File, UploadFile
 
 app = FastAPI(
     title="ACubed",
@@ -19,14 +19,28 @@ async def root():
     config = {
         **dotenv_values(find_dotenv())
     }
-    print(FFRChartPreprocesser)
+    print(FFRChartPreprocessor)
     return config
 
+@app.post("/process_stepfile")
+def upload(file: UploadFile = File(...)):
+    try:
+        sm = SMChartPreprocessor()
+        result = sm.preprocess(file.file.read().decode('utf-8'))
+    except Exception:
+        return {"message": "There was an error uploading the file"}
+    finally:
+        file.file.close()
 
-# @app.post("/segmentation")
-# def get_segmentation_map(file: bytes = File(...)):
+    return {**result}
+
+
+# @app.post("/process")
+# def get_stepfile(file: bytes = File(...)):
 #     """Get segmentation maps from image file"""
-#     segmented_image = get_segments(model, file)
-#     bytes_io = io.BytesIO()
-#     segmented_image.save(bytes_io, format="PNG")
-#     return Response(bytes_io.getvalue(), media_type="image/png")
+#     print(file)
+
+    # segmented_image = get_segments(model, file)
+    # bytes_io = io.BytesIO()
+    # segmented_image.save(bytes_io, format="PNG")
+    # return Response(bytes_io.getvalue(), media_type="image/png")
