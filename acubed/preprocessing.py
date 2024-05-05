@@ -9,7 +9,7 @@ class FFRChartPreprocessor():
 
     """Preprocesses FFR API response to a dictionary in following format:
     {
-        'id': id of stepfile (int),
+        'id': id of stepfile in FFR (int),
         'name': name of stepfile (str),
         'difficulty': manually assigned difficulty of stepfile (int),
         'chart': {
@@ -75,10 +75,14 @@ class FFRChartPreprocessor():
         """Retrieve step attributes"""
         return tuple(step[:2])
 
+from itertools import groupby, zip_longest
+
 class SMChartPreprocessor():
 
     """Preprocesses SM file to a dictionary in following format:
     {
+        'id': None (no FFR id is assigned for .sm files),
+        'name': name of stepfile (str),
         'difficulty': None (no FFR rating is assigned for .sm files),
         'chart': {
             'time': timestamps (float),
@@ -90,35 +94,38 @@ class SMChartPreprocessor():
         self.regex_dictionary = {
             "\n," : ",", "\n;" : ";"
         }
-        self.notes, self.timings, self.chart = [], {}, {}
+        self.notes, self.timings, self.chart, self.name = [], {}, {}, None
 
-    def preprocess(self, path):
+    def preprocess(self, raw_data):
         """Preprocesses raw data from .sm file."""
 
         # pylint: disable=too-many-locals
 
-        with open(path, 'r', encoding="utf-8") as sm_file:
-            content = self.multiple_replace(self.regex_dictionary, sm_file.read())
+        content = self.multiple_replace(self.regex_dictionary, raw_data)
 
-        for line in content.split('\n'):
-            if line.startswith("//"):
+        for line in re.split('\n|,{0,1}\s{2}', content):
+            if line.startswith("//-"):
                 continue
-            try:
-                sm_key, sm_value = tuple(line.split(':'))
-                if sm_key not in ['#OFFSET', '#BPMS']:
-                    continue
-                if sm_key == '#OFFSET':
-                    self.timings['offset'] = float(sm_value.strip(';'))
-                else:
+            if line.startswith("#") and line.endswith(";"):
+                cleaned_line = line.strip('#').strip(';')
+                sm_key, sm_value = tuple(cleaned_line.split(':'))
+                if sm_key.lower() == 'offset':
+                    self.timings['offset'] = float(sm_value)
+                if sm_key.lower() == 'title':
+                    self.name = sm_value
+                elif sm_key.lower() == 'bpms':
                     value = dict(map(float, bpm.split("="))
-                        for bpm in sm_value.strip(';').split(","))
+                        for bpm in sm_value.split(","))
                     self.timings['bpm'] = value
-            except ValueError:
-                self.notes.append(line.strip(';'))
-
+                else:
+                    continue
+            else:
+                if not line.endswith(':') and line:
+                    self.notes.append(line.strip(';'))
+        
         time = -1*self.timings['offset']
-        for i, measure in enumerate(' '.join(self.notes).split(', ')):
-            measure = np.array(measure.strip().split(' '))
+        for i, ((_, _), (_, m)) in enumerate(self.grouper(2, groupby(self.notes, lambda i : 'measure' in i))):
+            measure = np.fromiter(m, dtype = 'U4')
             beat = np.round(np.linspace(4*i, 4*(i+1), num=len(measure), endpoint=False), 3)
             for key, value in zip(beat, measure):
                 if value != '0000':
@@ -128,7 +135,12 @@ class SMChartPreprocessor():
                 _bpm = {v: k for k, v in self.timings['bpm'].items() if k <= key}
                 bpm = max(_bpm, key=_bpm.get, default=None)
                 time += 240./ (len(measure) * bpm)
-        return {'chart': list(self.chart.values()), 'difficulty': None}
+
+        return {'_id': None, 'name': self.name, 'difficulty': None, 'chart': list(self.chart.values())}
+
+    def grouper(self, n, iterable, padvalue=None):
+        """grouper(3, 'abcdefg', 'x') --> ('a','b','c'), ('d','e','f'), ('g','x','x')"""
+        return zip_longest(*[iter(iterable)]*n, fillvalue=padvalue)
 
     def multiple_replace(self, d, text):
         """Utility function to perform simultaneous replacements"""

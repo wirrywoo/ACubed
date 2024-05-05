@@ -9,6 +9,8 @@ BUCKET = [OPTIONAL] your-bucket-for-syncing-data (do not include 's3://')
 PROFILE = default
 PROJECT_NAME = ACubed
 PYTHON_INTERPRETER = python3
+API_BASE_PATH = ./fastapi
+UI_BASE_PATH = ./streamlit
 
 ifeq (,$(shell which conda))
 HAS_CONDA=False
@@ -52,11 +54,11 @@ test_environment:
 
 ## Initialize ACubed API
 start_api:
-	pipenv run fastapi run ./fastapi/server.py
+	pipenv run fastapi run $(API_BASE_PATH)/server.py
 
 ## Initialize ACubed UI
 start_app:
-	pipenv run ./streamlit/start.sh
+	pipenv run $(UI_BASE_PATH)/start.sh
 
 #################################################################################
 # PROJECT RULES                                                                 #
