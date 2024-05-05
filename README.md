@@ -31,10 +31,11 @@
 <br />
 <div align="center">
   <a href="https://github.com/wirrywoo/cobe-platform">
-    <img src="images/logo.png" alt="Logo" width="240" height="160">
+    <picture>
+        <source srcset="assets/logo/dark-mode.png"  media="(prefers-color-scheme: dark)">
+        <img src="assets/logo/no-dark-mode.png" alt="Logo" width="200px" height=auto>
+    </picture>
   </a>
-
-<h3 align="center">ACubed</h3>
 
   <p align="center">
     A containerized experimentation platform built to monitor online controlled experiments learned under contextual bandit policies in real-time. Received <b>Honorable Mention</b> in <a href="https://docker.devpost.com/">2023 Docker AI/ML Hackathon</a>. 
