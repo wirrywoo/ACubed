@@ -3,7 +3,7 @@
 import re
 import numpy as np
 
-class FFRChartPreprocesser():
+class FFRChartPreprocessor():
 
     # pylint: disable=too-few-public-methods
 
@@ -75,7 +75,7 @@ class FFRChartPreprocesser():
         """Retrieve step attributes"""
         return tuple(step[:2])
 
-class SMChartPreprocesser():
+class SMChartPreprocessor():
 
     """Preprocesses SM file to a dictionary in following format:
     {

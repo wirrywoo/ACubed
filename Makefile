@@ -26,7 +26,7 @@ resolve_line_endings:
 
 ## Refresh MongoDB database with new data from FFR's API
 refresh_database: 
-	pipenv run $(PYTHON_INTERPRETER) -m scripts.main
+	pipenv run $(PYTHON_INTERPRETER) -m scripts.refresh_database
 
 ## Delete all compiled Python files
 clean:
