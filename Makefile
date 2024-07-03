@@ -9,8 +9,8 @@ BUCKET = [OPTIONAL] your-bucket-for-syncing-data (do not include 's3://')
 PROFILE = default
 PROJECT_NAME = ACubed
 PYTHON_INTERPRETER = python3
-API_BASE_PATH = ./fastapi
-UI_BASE_PATH = ./streamlit
+API_BASE_PATH = fastapi
+UI_BASE_PATH = streamlit
 
 ifeq (,$(shell which conda))
 HAS_CONDA=False
@@ -40,9 +40,14 @@ clean:
 lint:
 	pipenv run pylint acubed scripts fastapi streamlit
 
+## Install local dependencies
+install_dependencies:
+	brew install python@3.8
+
+
 ## Set up acubed environment
 create_environment:
-	pipenv install
+	PIPENV_VENV_IN_PROJECT=1 pipenv install
 
 ## Remove acubed environment
 remove_environment:

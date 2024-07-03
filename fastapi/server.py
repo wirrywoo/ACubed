@@ -1,7 +1,5 @@
 """Module to initialize and configure FastAPI"""
 
-# pylint: disable=no-name-in-module
-
 from dotenv import find_dotenv, dotenv_values
 from acubed.preprocessing import FFRChartPreprocessor, SMChartPreprocessor
 from fastapi import FastAPI, File, UploadFile
@@ -24,13 +22,14 @@ async def root():
 
 @app.post("/process_stepfile")
 def upload(file: UploadFile = File(...)):
-    try:
-        sm = SMChartPreprocessor()
-        result = sm.preprocess(file.file.read().decode('utf-8'))
-    except Exception:
-        return {"message": "There was an error uploading the file"}
-    finally:
-        file.file.close()
+    """Upload .sm file to streamlit app"""
+    # try:
+    sm = SMChartPreprocessor()
+    result = sm.preprocess(file.file.read().decode('utf-8'))
+    # except Exception:
+    #     return {"message": "There was an error uploading the file"}
+    # finally:
+    #     file.file.close()
 
     return {**result}
 

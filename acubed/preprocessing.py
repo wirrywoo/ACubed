@@ -1,11 +1,11 @@
 """Module providing preprocessing functions to standardize stepfile data inputs."""
 
 import re
+from itertools import groupby, zip_longest
+
 import numpy as np
 
 class FFRChartPreprocessor():
-
-    # pylint: disable=too-few-public-methods
 
     """Preprocesses FFR API response to a dictionary in following format:
     {
@@ -75,7 +75,6 @@ class FFRChartPreprocessor():
         """Retrieve step attributes"""
         return tuple(step[:2])
 
-from itertools import groupby, zip_longest
 
 class SMChartPreprocessor():
 
@@ -99,11 +98,9 @@ class SMChartPreprocessor():
     def preprocess(self, raw_data):
         """Preprocesses raw data from .sm file."""
 
-        # pylint: disable=too-many-locals
-
         content = self.multiple_replace(self.regex_dictionary, raw_data)
 
-        for line in re.split('\n|,{0,1}\s{2}', content):
+        for line in re.split(r'\n|,{0,1}\s{2}', content):
             if line.startswith("//-"):
                 continue
             if line.startswith("#") and line.endswith(";"):
@@ -119,10 +116,16 @@ class SMChartPreprocessor():
                     self.timings['bpm'] = value
                 else:
                     continue
+            elif line.endswith(","):
+                self.notes.append(line.strip(","))
+                self.notes.append(',  // measure 0')
             else:
                 if not line.endswith(':') and line:
                     self.notes.append(line.strip(';'))
-        
+
+        if self.notes[0] != '// measure 0':
+            self.notes.insert(0, ',  // measure 0')
+
         time = -1*self.timings['offset']
         for i, ((_, _), (_, m)) in enumerate(self.grouper(2, groupby(self.notes, lambda i : 'measure' in i))):
             measure = np.fromiter(m, dtype = 'U4')
