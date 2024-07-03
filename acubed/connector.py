@@ -1,13 +1,14 @@
-import logging
-import requests
+"""Module providing connector functions to access data sources."""
+
 import json
 import time
-
+import logging
 from concurrent.futures import ThreadPoolExecutor
 
 from pymongo import MongoClient
 from pymongo.operations import ReplaceOne
-
+import requests
+from requests.exceptions import RequestException
 from acubed.preprocessing import FFRChartPreprocessor
 
 class FFRDatabaseConnector(FFRChartPreprocessor):
@@ -21,20 +22,23 @@ class FFRDatabaseConnector(FFRChartPreprocessor):
         super().__init__()
         for k, v in config.items():
             setattr(self, k, v)
-        self.THREAD_POOL = 16
+        self.thread_pool = 16
         self.max_retries = 3
         self.session = requests.Session()
         self.session.mount(
             'https://',
-            requests.adapters.HTTPAdapter(pool_maxsize=self.THREAD_POOL,
+            requests.adapters.HTTPAdapter(pool_maxsize=self.thread_pool,
                                         max_retries=self.max_retries,
                                         pool_block=True)
         )
-        self.BASE_API_URL = "https://www.flashflashrevolution.com/api/api.php"
-        self.API_URL = f"{self.BASE_API_URL}?key={self.FFR_API_KEY}&action={{}}"
+        self.base_api_url = "https://www.flashflashrevolution.com/api/api.php"
+        self.api_url = f"{self.base_api_url}?key={self.FFR_API_KEY}&action={{}}"
         self._get_chart_urls()
 
+        self.charts = {}
+
     def get(self, url):
+        '''Function to fetch results from url'''
         response = self.session.get(url)
         logging.info("request was completed in %s seconds [%s]",
                      response.elapsed.total_seconds(), response.url)
@@ -45,8 +49,11 @@ class FFRDatabaseConnector(FFRChartPreprocessor):
             time.sleep(5)
         return response
 
-    def download_charts(self, charts = []):
-        with ThreadPoolExecutor(max_workers=self.THREAD_POOL) as executor:
+    def download_charts(self, charts = None):
+        '''Download all charts from FFR's API to self.charts'''
+        if charts is None:
+            charts = []
+        with ThreadPoolExecutor(max_workers=self.thread_pool) as executor:
             for response in list(executor.map(self.get, self.urls)):
                 if response.status_code == 200:
                     chart = self.preprocess(json.loads(response.content))
@@ -56,12 +63,15 @@ class FFRDatabaseConnector(FFRChartPreprocessor):
         self.charts = dict((d['_id'], dict(d, index=index))
             for (index, d) in enumerate(charts))
 
-    def _get_chart_urls(self, chart_urls = []):
+    def _get_chart_urls(self, chart_urls = None):
+        '''Utility function to retrieve all chart urls from FFR's API'''
+        if chart_urls is None:
+            chart_urls = []
         try:
-            for song in requests.get(self.API_URL.format('songlist')).json():
+            for song in requests.get(self.api_url.format('songlist'), timeout=10).json():
                 chart_urls.append(
-                    self.API_URL.format(f"chart&level={song['id']}"))
-        except:
+                    self.api_url.format(f"chart&level={song['id']}"))
+        except RequestException:
             pass
         self.urls = chart_urls
 
@@ -78,13 +88,15 @@ class MongoDBConnector():
     def __init__(self, config):
         for k, v in config.items():
             setattr(self, k, v)
-        self.cluster_name = 'atlascluster.hlpskdz.mongodb.net'
-        self.uri = 'mongodb+srv://{}:{}@{}/?retryWrites=true&w=majority'.format(
-            self.USERNAME, self.MONGODB_KEY, self.cluster_name)
+        self.cluster = 'atlascluster.hlpskdz.mongodb.net'
+        self.options = "?retryWrites=true&w=majority"
+        self.uri = f"mongodb+srv://{self.USERNAME}:{self.MONGODB_KEY}@{self.cluster}/{self.options}"
+
         self.client = MongoClient(self.uri)
         self.database_changes = None
 
     def upsert(self, data):
+        '''Upserts stepfile into MongoDB database'''
         operations = [ReplaceOne(
             filter={"_id": doc["_id"]},
             replacement=doc,
@@ -95,6 +107,7 @@ class MongoDBConnector():
         self.database_changes = results.bulk_api_result
 
     def reset(self):
+        '''Clear MongoDB database'''
         results = self.client.get_database(
             'ffr').charts.delete_many({})
         return results

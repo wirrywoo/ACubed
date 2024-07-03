@@ -1,22 +1,16 @@
 """Module created to refresh the MongoDB database with new FFR stepfiles."""
 
-# pylint: disable=import-error
-
 import logging
 import time
 from dotenv import find_dotenv, dotenv_values
 from acubed.connector import FFRDatabaseConnector, MongoDBConnector
 
-def main(config):
-    """ Runs data processing scripts to turn raw data from (../raw) into
-        cleaned data ready to be analyzed (saved in ../processed).
-    """
+# def main(config):
+#     """ Runs data processing scripts to turn raw data from (../raw) into
+#         cleaned data ready to be analyzed (saved in ../processed).
+#     """
 
 if __name__ == '__main__':
-
-    """Assumes FFR_API_KEY is provided by Velocity and MongoDB database access
-    is granted by WirryWoo.
-    """
 
     start_time = time.time()
 
@@ -28,13 +22,13 @@ if __name__ == '__main__':
     ffr = FFRDatabaseConnector(config)
     ffr.download_charts()
 
-    print("--- Downloaded Charts: %s seconds ---" % (time.time() - start_time))
+    print(f"--- Downloaded Charts: {time.time() - start_time} seconds ---")
 
     db = MongoDBConnector(config)
     db.upsert(ffr.charts.values())
     upserts = db.database_changes['upserted']
 
-    print("--- Updated MongoDB database with new charts: %s seconds ---" % (time.time() - start_time))
+    print(f"--- Updated MongoDB database with new charts: {time.time() - start_time} seconds ---")
 
     logger = logging.getLogger(__name__)
     logger.info('making final data set from raw data')

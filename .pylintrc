@@ -1,0 +1,2 @@
+[MESSAGES CONTROL]
+disable=import-error,too-few-public-methods,too-many-locals,no-member,c-extension-no-member,no-name-in-module,line-too-long,too-many-branches

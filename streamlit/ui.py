@@ -1,16 +1,14 @@
 """Module to initialize and configure Streamlit app"""
 
-# pylint: disable=c-extension-no-member
-
 import requests
 from requests_toolbelt import MultipartEncoder
 import streamlit as st
 
 # # interact with FastAPI endpoint
-backend = "http://localhost:8000/process_stepfile"
+BACKEND = "http://localhost:8000/process_stepfile"
 
 def process(stepfile, server_url: str):
-
+    "Processes .sm file"
     m = MultipartEncoder(
         fields={'file': ('filename', stepfile, 'text/plain')}
     )
@@ -38,7 +36,7 @@ input_sm = st.file_uploader("Insert Stepfile (.sm)")  # image upload widget
 if st.button("Get raw data"):
 
     if input_sm:
-        segments = process(input_sm.read(), backend)
+        segments = process(input_sm.read(), BACKEND)
         st.json(segments.json())
     else:
         # handle case with no image
