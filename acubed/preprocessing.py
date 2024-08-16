@@ -132,6 +132,7 @@ class SMChartPreprocessor():
             beat = np.round(np.linspace(4*i, 4*(i+1), num=len(measure), endpoint=False), 3)
             for key, value in zip(beat, measure):
                 if value != '0000':
+                    min_time = 0
                     if not self.chart:
                         min_time = time
                     self.chart[key] = {'time': time - min_time, 'step': value}

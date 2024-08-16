@@ -1,5 +1,4 @@
-.PHONY: clean data lint requirements sync_data_to_s3 sync_data_from_s3
-
+.PHONY: start
 #################################################################################
 # GLOBALS                                                                       #
 #################################################################################
@@ -9,8 +8,8 @@ BUCKET = [OPTIONAL] your-bucket-for-syncing-data (do not include 's3://')
 PROFILE = default
 PROJECT_NAME = ACubed
 PYTHON_INTERPRETER = python3
-API_BASE_PATH = fastapi
-UI_BASE_PATH = streamlit
+API_BASE_PATH = api
+UI_BASE_PATH = ui
 
 ifeq (,$(shell which conda))
 HAS_CONDA=False
@@ -22,7 +21,10 @@ endif
 # COMMANDS                                                                      #
 #################################################################################
 
-## Standardize line endings in project to LF
+## Run API or Streamlit UI. Run `make start source=api` to initialize api only.
+start:
+	@if [ "$(source)" = "api" ]; then pipenv run fastapi run $(API_BASE_PATH)/server.py; else pipenv run $(UI_BASE_PATH)/start.sh; fi
+
 resolve_line_endings:
 	find . -type f -exec dos2unix {} \;
 
@@ -30,42 +32,35 @@ resolve_line_endings:
 refresh_database: 
 	pipenv run $(PYTHON_INTERPRETER) -m scripts.refresh_database
 
-## Delete all compiled Python files and virtual environment
+## Factory reset workspace
 clean:
-	remove_environment
+	pipenv --rm
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
 	find . -type d -name '*.egg-info' -exec rm -r {} +
 	find . -type f -name "*.lock" -delete
 
-## Lint using pylint
+## Check lint using pylint
 lint:
-	pipenv run pylint acubed scripts fastapi streamlit
+	pipenv run pylint acubed scripts api ui
 
-## Install local dependencies
-install_dependencies:
-	brew install python@3.10
+# ## Install local dependencies
+# install_dependencies:
+# 	brew install python@3.10
 
 ## Set up acubed environment
-create_environment:
-	PIPENV_VENV_IN_PROJECT=1 pipenv install
+install:
+	PIPENV_VENV_IN_PROJECT=1 pipenv install -d
 
-## Remove acubed environment
-remove_environment:
-	pipenv --rm
-
-## Test acubed environment is setup correctly
 test_environment:
 	pipenv run $(PYTHON_INTERPRETER) test_environment.py
 
-## Initialize ACubed API
-start_api:
-	pipenv run fastapi run $(API_BASE_PATH)/server.py
+# start_api:
+# 	pipenv run fastapi run $(API_BASE_PATH)/server.py
 
-## Initialize ACubed UI
-start_app:
-	pipenv run $(UI_BASE_PATH)/start.sh
-
+# start_app:
+# 	pipenv run $(UI_BASE_PATH)/start.sh
+	
 #################################################################################
 # PROJECT RULES                                                                 #
 #################################################################################

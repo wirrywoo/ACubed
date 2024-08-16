@@ -1,8 +1,9 @@
 """Module to initialize and configure FastAPI"""
 
 from dotenv import find_dotenv, dotenv_values
-from acubed.preprocessing import FFRChartPreprocessor, SMChartPreprocessor
 from fastapi import FastAPI, File, UploadFile
+
+from acubed.preprocessing import FFRChartPreprocessor, SMChartPreprocessor
 
 app = FastAPI(
     title="ACubed",
