@@ -30,11 +30,13 @@ resolve_line_endings:
 refresh_database: 
 	pipenv run $(PYTHON_INTERPRETER) -m scripts.refresh_database
 
-## Delete all compiled Python files
+## Delete all compiled Python files and virtual environment
 clean:
+	remove_environment
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
 	find . -type d -name '*.egg-info' -exec rm -r {} +
+	find . -type f -name "*.lock" -delete
 
 ## Lint using pylint
 lint:
@@ -42,8 +44,7 @@ lint:
 
 ## Install local dependencies
 install_dependencies:
-	brew install python@3.8
-
+	brew install python@3.10
 
 ## Set up acubed environment
 create_environment:

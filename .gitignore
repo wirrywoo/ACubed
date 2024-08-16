@@ -251,3 +251,5 @@ cython_debug/
 
 .devcontainer/
 *.pyc
+
+*.lock
