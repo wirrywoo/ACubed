@@ -38,16 +38,16 @@
   </a>
 
   <p align="center">
-    A containerized experimentation platform built to monitor online controlled experiments learned under contextual bandit policies in real-time. Received <b>Honorable Mention</b> in <a href="https://docker.devpost.com/">2023 Docker AI/ML Hackathon</a>. 
+    A redesigned system to measure stepfile difficulty, compute AAA equivalency, and rank player's skill in FlashFlashRevolution (FFR). 
 <!--     <br />
     <a href="https://github.com/wirrywoo/cobe-platform/"><strong>Explore the docs »</strong></a>
     <br /> -->
     <br />
     <br />
-    <a href="https://www.youtube.com/watch?v=iHAt1286_4c">View Demo</a>
+<!--    <a href="https://www.youtube.com/watch?v=iHAt1286_4c">View Demo</a>
     ·
     <a href="https://devpost.com/software/containerized-online-bandit-experimentation-cobe-platform">View Devpost Submission</a>
-    ·
+    · -->
     <a href="https://github.com/wirrywoo/cobe-platform/issues">Report Bug</a>
     ·
     <a href="https://github.com/wirrywoo/cobe-platform/issues">Request Feature</a>
