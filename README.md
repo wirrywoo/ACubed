@@ -30,7 +30,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/wirrywoo/cobe-platform">
+  <a href="https://github.com/wirrywoo/ACubed">
     <picture>
         <source srcset="assets/logo/dark-mode.png"  media="(prefers-color-scheme: dark)">
         <img src="assets/logo/no-dark-mode.png" alt="Logo" width="200px" height=auto>
@@ -38,7 +38,7 @@
   </a>
 
   <p align="center">
-    A redesigned system to measure stepfile difficulty, compute AAA equivalency, and rank player's skill in FlashFlashRevolution (FFR). 
+    A redesigned system to measure stepfile difficulty, compute AAA equivalency, and rank player's skill in <a href="https://www.flashflashrevolution.com/">FlashFlashRevolution</a> (FFR). 
 <!--     <br />
     <a href="https://github.com/wirrywoo/cobe-platform/"><strong>Explore the docs »</strong></a>
     <br /> -->
@@ -89,7 +89,7 @@
 
 ACubed is a collection of machine learning models aimed to standardize feature definitions, increase data scalability, and improve model interpretability for the popular music-based rhythm game FlashFlashRevolution. It proposes a time series extrinsic regression model using objectively defined time-sensitive features to predict stepfile difficulty, and utilizes expectation-maximization algorithm to design a model training framework that simultaneously learns AAA equivalency and skill rating for any given player.
 
-Shown below is a high-level diagram that visualizes the technical architecture of the COBE Platform in its current state.
+Shown below is a high-level diagram that visualizes the proposed technical architecture of ACubed's integration with FFR's Codebase.
 
 ```mermaid
 
@@ -100,30 +100,34 @@ stateDiagram
     classDef actor font-family: courier, font-size:12px
     classDef none font-family: none, font-size:none
 
-    direction LR
-    Users --> LoadBalancer:::container
-    Dev --> CobePlatform:::platform
-
-    state CobePlatform {
+    state ACubedInternal {
         direction LR
-        LoadBalancer --> WebControl
-        LoadBalancer --> WebTreatment
-        WebControl --> PolicyLearner
-        WebTreatment --> PolicyLearner
-        PolicyLearner --> LoadBalancer
+
+        ACubedDatabase --> ACubedCodebase
+        ACubedCodebase --> DifficultyModel
+        ACubedCodebase --> AAAEquivModel
+        ACubedCodebase --> SkillRatingModel
+        DifficultyModel --> ACubedAPI
+        FFRAPI --> ACubedDatabase
     }
-    WebControl:::container --> Users:::actor
-    WebTreatment:::container --> Users
-    Users --> PolicyLearner:::container
-    WebControl --> WandB:::platform
-    WebTreatment --> WandB
-    PolicyLearner --> WandB
-    WandB --> Dev:::actor
-    Dev --> PolicyLearner
+
+    state FFRInternal {
+        direction LR
+        FFRDatabase --> FFRAPI
+        FFRDatabase --> FFRCodebase
+    }
+    ACubedInternal:::platform
+    FFRInternal:::platform
+    ACubedDatabase:::container
+    ACubedCodebase:::container
+    DifficultyModel:::container
+    FFRAPI:::container
+    ACubedAPI:::container --> FFRDatabase:::container
+    AAAEquivModel:::container --> FFRCodebase:::container
+    FFRCodebase:::container --> FFREngine:::actor
+    FFREngine:::actor --> FFRWebsite:::actor
+    SkillRatingModel:::container --> FFRWebsite:::actor
 ```
-
-[![Google Colab Badge](https://img.shields.io/badge/Google%20Colab-F9AB00?logo=googlecolab&logoColor=fff&style=for-the-badge)](https://colab.research.google.com/drive/1ESKuxGevumiloMkdsoOAZQ3vgfsFojaF?usp=sharing)
-
 
 ## Control vs. Treatment
 ![control](https://github.com/wirrywoo/cobe-platform/assets/148647848/0839d56a-1c88-4907-b247-ff1c9493cf63)
