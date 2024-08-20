@@ -135,16 +135,7 @@ stateDiagram
 
 ### Built With
 
-* [![Python][python-shield]][python-url]
-* [![Docker][docker-shield]][docker-url]
-* [![Django][django-shield]][django-url]
-* [![JQuery][jquery-shield]][jquery-url]
-* [![Gunicorn][gunicorn-shield]][gunicorn-url]
-* [![NGINX][nginx-shield]][nginx-url]
-* [![VowpalWabbit][vw-shield]][vw-url]
-* [![Weights and Biases][wandb-shield]][wandb-url]
-* [![Ubuntu][ubuntu-shield]][ubuntu-url]
-* [![Visual Studio Code][vscode-shield]][vscode-url]
+<img height="32" width="32" src="https://cdn.simpleicons.org/streamlit/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/python/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/fastapi/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/mongodb/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/githubactions/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/github/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/ubuntu/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/gnubash/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/latex/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/polars/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/numpy/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/weightsandbiases/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/gunicorn/black/white" />
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
