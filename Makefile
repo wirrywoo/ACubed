@@ -21,7 +21,7 @@ endif
 # COMMANDS                                                                      #
 #################################################################################
 
-## Run API or Streamlit UI. Run `make start source=api` to initialize api only.
+## Initialize acubed api and ui. Run `make start source=api` to initialize api only.
 start:
 	@if [ "$(source)" = "api" ]; then pipenv run fastapi run $(API_BASE_PATH)/server.py; else pipenv run $(UI_BASE_PATH)/start.sh; fi
 
@@ -32,8 +32,8 @@ resolve_line_endings:
 refresh_database: 
 	pipenv run $(PYTHON_INTERPRETER) -m scripts.refresh_database
 
-## Factory reset workspace
-clean:
+## Removes acubed environment and factory reset workspace
+uninstall:
 	pipenv --rm
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete

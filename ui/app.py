@@ -19,17 +19,19 @@ def process(stepfile, server_url: str):
 
     return r
 
+with open( "./ui/style.css", encoding='utf-8' ) as css:
+    st.markdown( f'<style>{css.read()}</style>' , unsafe_allow_html= True)
 
 # construct UI layout
 st.title("FFR Difficulty Model")
 
-st.write(
+st.markdown(
     """A Redesigned System to Improve Skill Measurement in FlashFlashRevolution.
-         This streamlit app uses a FastAPI service as backend.
-         Visit this URL at `:8000/docs` for FastAPI documentation."""
+        This streamlit app uses a FastAPI service as backend.
+        Visit this URL at `:8000/docs` for FastAPI documentation."""
 )  # description and instructions
 
-input_sm = st.file_uploader("Insert Stepfile (.sm)")  # image upload widget
+input_sm = st.file_uploader(r"$\textsf{\footnotesize Insert Stepfile (.sm)}$")  # image upload widget
 
 # print(requests.get("http://localhost:8000/"))
 
@@ -40,4 +42,4 @@ if st.button("Get raw data"):
         st.json(segments.json())
     else:
         # handle case with no image
-        st.write("Insert stepfile!")
+        st.write("Insert stepfile!", unsafe_allow_html = True)

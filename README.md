@@ -129,20 +129,6 @@ stateDiagram
     SkillRatingModel:::container --> FFRWebsite:::actor
 ```
 
-## Control vs. Treatment
-![control](https://github.com/wirrywoo/cobe-platform/assets/148647848/0839d56a-1c88-4907-b247-ff1c9493cf63)
-![treatment](https://github.com/wirrywoo/cobe-platform/assets/148647848/f52d481f-a11f-4b8d-9e7b-155d0d2a9df6)
-
-## Visualizations
-**Average Reward Performance of Control vs. Treatment Variations**
-
-![simulated_avg_reward](https://github.com/wirrywoo/cobe-platform/assets/148647848/a0b31fdb-e4c9-45d9-b1c5-d2e5298e90fa)
-
-**Updating NGINX Probabilities from CB Learning**
-
-![learned_probabilities_for_me](https://github.com/wirrywoo/cobe-platform/assets/148647848/19f7a297-3d92-4bc4-b490-79c95398f869)
-
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
@@ -172,19 +158,33 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-Create Weights and Biases Account and add API Key in `.env` file
+This project is developed on `Python 3.10.12` in `Ubuntu-22.04 (WSL)` via the default `bash` Linux shell. Further testing on codebase compatibility is needed. Make sure to test the project in different environments and report any issues you encounter.
+
+Create `.env` file containing the following contents and add configuration file to project's root directory:
+
+```
+USERNAME=<insert FFR username>
+MONGODB_KEY=<insert MongoDB secret key (contact WirryWoo)>
+FFR_API_KEY=<insert FFR API secret key (contact Velocity)>
+```
 
 ### Installation
 
-1. Clone the repo
-   ```sh
-   git clone https://github.com/wirrywoo/cobe-platform.git
-   ```
-2. Run in `cobe-platform/`
-   ```sh
-   docker compose up -d
-   ```
-3. Go to browser and enter `http://127.0.0.1/cobe-platform-demo/?seed=1` to see control group and `http://127.0.0.1/cobe-platform-demo/?seed=3` to see treatment group.
+1. Create virtual environment and install all necessary dependencies by running the following command:
+    ```console
+    foo@bar:/acubed$ make install
+    ```
+2. Run both FastAPI server and Streamlit web application by running the following command:
+    ```console
+    foo@bar:/acubed$ make start
+    ```
+3. Navigate to `http://localhost:8501/acubed` in the web browser to access the application.
+4. In cases when a factory reset for the project is in need, run the following command and repeat steps 1 - 3. 
+    ```console
+    foo@bar:/acubed$ make uninstall
+    ```
+
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
