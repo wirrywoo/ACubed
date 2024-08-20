@@ -173,16 +173,55 @@ FFR_API_KEY=<insert FFR API secret key (contact Velocity)>
 1. Create virtual environment and install all necessary dependencies by running the following command:
     ```console
     foo@bar:/acubed$ make install
+    PIPENV_VENV_IN_PROJECT=1 pipenv install -d
+    Loading .env environment variables...
+    Creating a virtualenv for this project...
+
+    ...
+    
+    ✔ Successfully created virtual environment!
+    Virtualenv location: /acubed/.venv
+    Pipfile.lock not found, creating...
+
+    ...
+
+    Updated Pipfile.lock (...)!
+    To activate this project's virtualenv, run pipenv shell.
+    Alternatively, run a command inside the virtualenv with pipenv run.
+    Installing dependencies from Pipfile.lock (...)...
     ```
 2. Run both FastAPI server and Streamlit web application by running the following command:
     ```console
     foo@bar:/acubed$ make start
+    Loading .env environment variables...
+    INFO     Using path api/server.py
+    INFO     Resolved absolute path /acubed/api/server.py
+    INFO     Searching for package file structure from directories with __init__.py files
+    INFO     Importing from /acubed/api
+
+    ...
+  
+    INFO     Importing module server
+  
+    You can now view your Streamlit app in your browser.
+  
+    URL: http://localhost:8501/acubed
+
+    ...
     ```
 3. Navigate to `http://localhost:8501/acubed` in the web browser to access the application.
 4. In cases when a factory reset for the project is in need, run the following command and repeat steps 1 - 3. 
     ```console
     foo@bar:/acubed$ make uninstall
+    pipenv --rm
+    Loading .env environment variables...
+    Removing virtualenv (/acubed/.venv)...
+    find . -type f -name "*.py[co]" -delete
+    find . -type d -name "__pycache__" -delete
+    find . -type d -name '*.egg-info' -exec rm -r {} +
+    find . -type f -name "*.lock" -delete
     ```
+
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
