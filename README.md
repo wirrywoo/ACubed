@@ -25,8 +25,6 @@
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
-
-
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
@@ -40,17 +38,16 @@
   <p align="center">
     A redesigned system to measure stepfile difficulty, compute AAA equivalency, and rank player's skill in <a href="https://www.flashflashrevolution.com/">FlashFlashRevolution</a> (FFR). 
 <!--     <br />
-    <a href="https://github.com/wirrywoo/cobe-platform/"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/wirrywoo/acubed/"><strong>Explore the docs »</strong></a>
     <br /> -->
     <br />
     <br />
 <!--    <a href="https://www.youtube.com/watch?v=iHAt1286_4c">View Demo</a>
     ·
-    <a href="https://devpost.com/software/containerized-online-bandit-experimentation-cobe-platform">View Devpost Submission</a>
     · -->
-    <a href="https://github.com/wirrywoo/cobe-platform/issues">Report Bug</a>
+    <a href="https://github.com/wirrywoo/acubed/issues">Report Bug</a>
     ·
-    <a href="https://github.com/wirrywoo/cobe-platform/issues">Request Feature</a>
+    <a href="https://github.com/wirrywoo/acubed/issues">Request Feature</a>
   </p>
 </div>
 
@@ -63,7 +60,7 @@
     <li>
       <a href="#about-the-project">About The Project</a>
       <ul>
-        <li><a href="#built-with">Built With</a></li>
+        <li><a href="#technology-stack">Technology Stack</a></li>
       </ul>
     </li>
     <li>
@@ -133,9 +130,9 @@ stateDiagram
 
 
 
-### Built With
+### Technology Stack
 
-<img height="32" width="32" src="https://cdn.simpleicons.org/streamlit/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/python/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/fastapi/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/mongodb/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/githubactions/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/github/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/ubuntu/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/gnubash/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/latex/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/polars/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/numpy/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/weightsandbiases/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/gunicorn/black/white" />
+<img height="32" width="32" src="https://cdn.simpleicons.org/docker/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/dotenv/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/fastapi/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/github/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/githubactions/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/gnubash/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/mongodb/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/numpy/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/overleaf/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/polars/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/python/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/scikitlearn/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/streamlit/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/ubuntu/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/weightsandbiases/black/white" />
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -144,12 +141,9 @@ stateDiagram
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
-
 ### Prerequisites
 
-This project is developed on `Python 3.10.12` in `Ubuntu-22.04 (WSL)` via the default `bash` Linux shell. Further testing on codebase compatibility is needed. Make sure to test the project in different environments and report any issues you encounter.
+This project is developed on `Python 3.10.12` in `Ubuntu-22.04 (WSL)` via the default `bash` Linux shell. Further testing on codebase compatibility across different environment versions is needed. Please report any issues you may encounter.
 
 Create `.env` file containing the following contents and add configuration file to project's root directory:
 
@@ -238,7 +232,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 - [ ] Feature 3
     - [ ] Nested Feature
 
-See the [open issues](https://github.com/wirrywoo/cobe-platform/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/wirrywoo/acubed/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -277,7 +271,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 Wilson Cheung - [Personal Website](https://wilsoncheung.me/) - info@wilsoncheung.me
 
-Project Link: [https://github.com/wirrywoo/cobe-platform](https://github.com/wirrywoo/cobe-platform)
+Project Link: [https://github.com/wirrywoo/acubed](https://github.com/wirrywoo/acubed)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -296,38 +290,16 @@ Project Link: [https://github.com/wirrywoo/cobe-platform](https://github.com/wir
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/wirrywoo/cobe-platform.svg
-[contributors-url]: https://github.com/wirrywoo/cobe-platform/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/wirrywoo/cobe-platform.svg
-[forks-url]: https://github.com/wirrywoo/cobe-platform/network/members
-[stars-shield]: https://img.shields.io/github/stars/wirrywoo/cobe-platform.svg
-[stars-url]: https://github.com/wirrywoo/cobe-platform/stargazers
-[issues-shield]: https://img.shields.io/github/issues/wirrywoo/cobe-platform.svg
-[issues-url]: https://github.com/wirrywoo/cobe-platform/issues
-[license-shield]: https://img.shields.io/github/license/wirrywoo/cobe-platform
-[license-url]: https://github.com/wirrywoo/cobe-platform/blob/main/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?logo=linkedin&colorB=555
+[contributors-shield]: https://img.shields.io/github/contributors/wirrywoo/acubed.svg?colorA=363a4f&colorB=1f77b4&style=for-the-badge
+[contributors-url]: https://github.com/wirrywoo/acubed/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/wirrywoo/acubed.svg?colorA=363a4f&colorB=ff7f0e&style=for-the-badge
+[forks-url]: https://github.com/wirrywoo/acubed/network/members
+[stars-shield]: https://img.shields.io/github/stars/wirrywoo/acubed.svg?colorA=363a4f&colorB=2ca02c&style=for-the-badge
+[stars-url]: https://github.com/wirrywoo/acubed/stargazers
+[issues-shield]: https://img.shields.io/github/issues/wirrywoo/acubed.svg?colorA=363a4f&colorB=d62728&style=for-the-badge
+[issues-url]: https://github.com/wirrywoo/acubed/issues
+[license-shield]: https://img.shields.io/github/license/wirrywoo/acubed?colorA=363a4f&colorB=9467bd&style=for-the-badge
+[license-url]: https://github.com/wirrywoo/acubed/blob/main/LICENSE.txt
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?logo=linkedin&logoColor=white?colorA=363a4f&colorB=0A66C2&style=for-the-badge
 [linkedin-url]: https://linkedin.com/in/wcheung-in/
 [product-screenshot]: images/screenshot.png
-
-[python-shield]: https://img.shields.io/badge/Python-3776AB.svg?style=for-the-badge&logo=Python&logoColor=white
-[python-url]: https://www.python.org/
-[jquery-shield]: https://img.shields.io/badge/jQuery-0769AD.svg?style=for-the-badge&logo=jQuery&logoColor=white
-[Jquery-url]: https://jquery.com 
-[django-shield]: https://img.shields.io/badge/Django-092E20.svg?style=for-the-badge&logo=Django&logoColor=white
-[django-url]: https://www.djangoproject.com/
-[gunicorn-shield]: https://img.shields.io/badge/Gunicorn-499848.svg?style=for-the-badge&logo=Gunicorn&logoColor=white
-[gunicorn-url]: https://gunicorn.org/
-[nginx-shield]: https://img.shields.io/badge/NGINX-009639.svg?style=for-the-badge&logo=NGINX&logoColor=white
-[nginx-url]: https://www.nginx.com/
-[vw-shield]: https://img.shields.io/badge/Vowpal%20Wabbit-FF81F9.svg?style=for-the-badge&logo=Vowpal-Wabbit&logoColor=black
-[vw-url]: https://vowpalwabbit.org/
-[wandb-shield]: https://img.shields.io/badge/Weights%20&%20Biases-FFBE00.svg?style=for-the-badge&logo=weightsandbiases&logoColor=black
-[wandb-url]: https://wandb.ai/
-[docker-shield]: https://img.shields.io/badge/Docker-2496ED.svg?style=for-the-badge&logo=Docker&logoColor=white
-[docker-url]: https://www.docker.com/
-[ubuntu-shield]: https://img.shields.io/badge/Ubuntu-E95420.svg?style=for-the-badge&logo=Ubuntu&logoColor=white
-[ubuntu-url]: https://ubuntu.com/
-[vscode-shield]: https://img.shields.io/badge/Visual%20Studio%20Code-007ACC.svg?style=for-the-badge&logo=Visual-Studio-Code&logoColor=white
-[vscode-url]: https://code.visualstudio.com/
-
