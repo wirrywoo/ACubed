@@ -151,13 +151,7 @@ To get a local copy up and running follow these simple example steps.
 
 This project is developed on `Python 3.10.12` in `Ubuntu-22.04 (WSL)` via the default `bash` Linux shell. Further testing on codebase compatibility is needed. Make sure to test the project in different environments and report any issues you encounter.
 
-Create `.env` file containing the following contents and add configuration file to project's root directory:
-
-```
-USERNAME=<insert FFR username>
-MONGODB_KEY=<insert MongoDB secret key (contact WirryWoo)>
-FFR_API_KEY=<insert FFR API secret key (contact Velocity)>
-```
+Create `.env` file using `.env.example` as a template and save this file in the project's root directory.
 
 ### Installation
 

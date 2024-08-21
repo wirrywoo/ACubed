@@ -90,7 +90,7 @@ class MongoDBConnector():
             setattr(self, k, v)
         self.cluster = 'atlascluster.hlpskdz.mongodb.net'
         self.options = "?retryWrites=true&w=majority"
-        self.uri = f"mongodb+srv://{self.USERNAME}:{self.MONGODB_KEY}@{self.cluster}/{self.options}"
+        self.uri = f"mongodb+srv://{self.USERNAME}:{self.MONGODB_PASSWORD}@{self.cluster}/{self.options}"
 
         self.client = MongoClient(self.uri)
         self.database_changes = None
