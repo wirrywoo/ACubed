@@ -18,12 +18,16 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
+<div align="center">
+
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+
+</div>
+
+
 
 <!-- PROJECT LOGO -->
 <br />
@@ -132,7 +136,7 @@ stateDiagram
 
 ### Technology Stack
 
-<img height="32" width="32" src="https://cdn.simpleicons.org/docker/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/dotenv/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/fastapi/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/github/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/githubactions/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/gnubash/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/mongodb/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/numpy/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/overleaf/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/polars/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/python/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/scikitlearn/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/streamlit/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/ubuntu/black/white" />&emsp;<img height="32" width="32" src="https://cdn.simpleicons.org/weightsandbiases/black/white" />
+<a href="https://www.docker.com/"><img height="32" width="32" src="https://cdn.simpleicons.org/docker/black/white" /></a>&emsp;<a href="https://www.dotenv.org/"><img height="32" width="32" src="https://cdn.simpleicons.org/dotenv/black/white" /></a>&emsp;<a href="https://fastapi.tiangolo.com/"><img height="32" width="32" src="https://cdn.simpleicons.org/fastapi/black/white" /></a>&emsp;<a href="https://git-scm.com/"><img height="32" width="32" src="https://cdn.simpleicons.org/git/black/white" /></a>&emsp;<a href="https://github.com/features/actions"><img height="32" width="32" src="https://cdn.simpleicons.org/githubactions/black/white" /></a>&emsp;<a href="https://www.gnu.org/software/bash/"><img height="32" width="32" src="https://cdn.simpleicons.org/gnubash/black/white" /></a>&emsp;<a href="https://www.mongodb.com/"><img height="32" width="32" src="https://cdn.simpleicons.org/mongodb/black/white" /></a>&emsp;<a href="https://numpy.org/"><img height="32" width="32" src="https://cdn.simpleicons.org/numpy/black/white" /></a>&emsp;<a href="https://www.overleaf.com/"><img height="32" width="32" src="https://cdn.simpleicons.org/overleaf/black/white" /></a>&emsp;<a href="https://pola.rs/"><img height="32" width="32" src="https://cdn.simpleicons.org/polars/black/white" /></a>&emsp;<a href="https://www.python.org/"><img height="32" width="32" src="https://cdn.simpleicons.org/python/black/white" /></a>&emsp;<a href="https://scikit-learn.org/stable/index.html"><img height="32" width="32" src="https://cdn.simpleicons.org/scikitlearn/black/white" /></a>&emsp;<a href="https://streamlit.io/"><img height="32" width="32" src="https://cdn.simpleicons.org/streamlit/black/white" /></a>&emsp;<a href="https://ubuntu.com/"><img height="32" width="32" src="https://cdn.simpleicons.org/ubuntu/black/white" /></a>&emsp;<a href="https://wandb.ai/site"><img height="32" width="32" src="https://cdn.simpleicons.org/weightsandbiases/black/white" /></a>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -259,8 +263,7 @@ Don't forget to give the project a star! Thanks again!
 
 <!-- LICENSE -->
 ## License
-
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+[![MIT License][license-shield]][license-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -269,9 +272,11 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Wilson Cheung - [Personal Website](https://wilsoncheung.me/) - info@wilsoncheung.me
+<!--
+[![LinkedIn][linkedin-shield]][linkedin-url]
+-->
 
-Project Link: [https://github.com/wirrywoo/acubed](https://github.com/wirrywoo/acubed)
+<a href = "https://wilsoncheung.me/"><img height="32" width="32" src="https://cdn.simpleicons.org/wordpress/black/white" /></a>&emsp;<a href="https://linkedin.com/in/wcheung-in/"><img height="32" width="32" src="https://cdn.simpleicons.org/linkedin/black/white" /></a>&emsp;<a href="https://github.com/wirrywoo/"><img height="32" width="32" src="https://cdn.simpleicons.org/github/black/white" /></a>&emsp;<a href="mailto:info@wilsoncheung.me?subject=[ACubed]"><img height="32" width="32" src="https://cdn.simpleicons.org/gmail/black/white" /></a>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
