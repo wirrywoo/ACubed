@@ -38,7 +38,8 @@
         <img src="assets/logo/no-dark-mode.png" alt="Logo" width="200px" height=auto>
     </picture>
   </a>
-
+  <br />
+  <br />
   <p align="center">
     A redesigned system to measure stepfile difficulty, compute AAA equivalency, and rank player's skill in <a href="https://www.flashflashrevolution.com/">FlashFlashRevolution</a> (FFR). 
 <!--     <br />
@@ -49,9 +50,8 @@
 <!--    <a href="https://www.youtube.com/watch?v=iHAt1286_4c">View Demo</a>
     ·
     · -->
-    <a href="https://github.com/wirrywoo/acubed/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/wirrywoo/acubed/issues">Request Feature</a>
+    <a href="https://github.com/wirrywoo/acubed/issues"><img src="https://img.shields.io/badge/report_bug-blue?colorA=363a4f&colorB=d62728&style=for-the-badge" /></a>
+    <a href="https://github.com/wirrywoo/acubed/issues"><img src="https://img.shields.io/badge/request_feature-blue?colorA=363a4f&colorB=2ca02c&style=for-the-badge" /></a>
   </p>
 </div>
 
@@ -130,7 +130,6 @@ stateDiagram
     SkillRatingModel:::container --> FFRWebsite:::actor
 ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
@@ -138,7 +137,6 @@ stateDiagram
 
 <a href="https://www.docker.com/"><img height="32" width="32" src="https://cdn.simpleicons.org/docker/black/white" /></a>&emsp;<a href="https://www.dotenv.org/"><img height="32" width="32" src="https://cdn.simpleicons.org/dotenv/black/white" /></a>&emsp;<a href="https://fastapi.tiangolo.com/"><img height="32" width="32" src="https://cdn.simpleicons.org/fastapi/black/white" /></a>&emsp;<a href="https://git-scm.com/"><img height="32" width="32" src="https://cdn.simpleicons.org/git/black/white" /></a>&emsp;<a href="https://github.com/features/actions"><img height="32" width="32" src="https://cdn.simpleicons.org/githubactions/black/white" /></a>&emsp;<a href="https://www.gnu.org/software/bash/"><img height="32" width="32" src="https://cdn.simpleicons.org/gnubash/black/white" /></a>&emsp;<a href="https://www.mongodb.com/"><img height="32" width="32" src="https://cdn.simpleicons.org/mongodb/black/white" /></a>&emsp;<a href="https://numpy.org/"><img height="32" width="32" src="https://cdn.simpleicons.org/numpy/black/white" /></a>&emsp;<a href="https://www.overleaf.com/"><img height="32" width="32" src="https://cdn.simpleicons.org/overleaf/black/white" /></a>&emsp;<a href="https://pola.rs/"><img height="32" width="32" src="https://cdn.simpleicons.org/polars/black/white" /></a>&emsp;<a href="https://www.python.org/"><img height="32" width="32" src="https://cdn.simpleicons.org/python/black/white" /></a>&emsp;<a href="https://scikit-learn.org/stable/index.html"><img height="32" width="32" src="https://cdn.simpleicons.org/scikitlearn/black/white" /></a>&emsp;<a href="https://streamlit.io/"><img height="32" width="32" src="https://cdn.simpleicons.org/streamlit/black/white" /></a>&emsp;<a href="https://ubuntu.com/"><img height="32" width="32" src="https://cdn.simpleicons.org/ubuntu/black/white" /></a>&emsp;<a href="https://wandb.ai/site"><img height="32" width="32" src="https://cdn.simpleicons.org/weightsandbiases/black/white" /></a>
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
@@ -207,7 +205,6 @@ Create `.env` file using `.env.example` as a template and save this file in the 
 
 
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
@@ -232,8 +229,6 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 See the [open issues](https://github.com/wirrywoo/acubed/issues) for a full list of proposed features (and known issues).
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- CONTRIBUTING -->
@@ -250,16 +245,12 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 
 <!-- LICENSE -->
 ## License
 [![MIT License][license-shield]][license-url]
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
@@ -272,7 +263,11 @@ Don't forget to give the project a star! Thanks again!
 
 <a href = "https://wilsoncheung.me/"><img height="32" width="32" src="https://cdn.simpleicons.org/wordpress/black/white" /></a>&emsp;<a href="https://linkedin.com/in/wcheung-in/"><img height="32" width="32" src="https://cdn.simpleicons.org/linkedin/black/white" /></a>&emsp;<a href="https://github.com/wirrywoo/"><img height="32" width="32" src="https://cdn.simpleicons.org/github/black/white" /></a>&emsp;<a href="mailto:info@wilsoncheung.me?subject=[ACubed]"><img height="32" width="32" src="https://cdn.simpleicons.org/gmail/black/white" /></a>
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">
+
+  [🔼 Back to top](#readme-top)
+
+</p>
 
 
 
