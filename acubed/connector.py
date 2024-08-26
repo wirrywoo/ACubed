@@ -5,15 +5,20 @@ import time
 import logging
 from concurrent.futures import ThreadPoolExecutor
 
+import httplib2
+import apiclient
+import pandas as pd
+import numpy as np
+
 from pymongo import MongoClient
 from pymongo.operations import ReplaceOne
 import requests
 from requests.exceptions import RequestException
-from acubed.preprocessing import FFRChartPreprocessor
+from acubed.preprocessing import FFRChartPreprocesser
 
-class FFRDatabaseConnector(FFRChartPreprocessor):
+class FFRDatabaseConnector(FFRChartPreprocesser):
 
-    """Connects to FFR API via api_key (given by Velocity) and downloads all
+    """Connects to FFR API via api_key and downloads all
     public chart data with additional preprocessing in 2.5 minutes.
     Stores all results in self.charts.
     """
@@ -111,3 +116,38 @@ class MongoDBConnector():
         results = self.client.get_database(
             'ffr').charts.delete_many({})
         return results
+
+class FFRContestedDifficultySheet():
+    """Connects to Google Sheets document containing a log of all
+    contested difficulties on FFR. 
+    """
+
+    def __init__(self, api_key):
+        self.max_difficulty = 120
+        self.url = 'https://sheets.googleapis.com/$discovery/rest?version=v4'
+        self.service = apiclient.discovery.build(
+            serviceName = 'sheets',
+            version = 'v4',
+            http = httplib2.Http(),
+            discoveryServiceUrl = self.url,
+            developerKey = api_key,
+            cache_discovery = False
+        )
+        self.spreadsheet_id = '1Wm1RHG318EK07U4VDXkztKTKnfy9wEOQqWRiTclbCz8'
+
+    def extract(self, year):
+        '''Retrieve and preprocess data from Google Sheets'''
+        range_name = f'{year} Difficulty Changes!B3:D250'
+        try:
+            result = self.service.spreadsheets().values().get(
+                spreadsheetId=self.spreadsheet_id, range=range_name).execute()
+            values = result.get('values', [])
+            df = pd.DataFrame(values,
+                columns=['song_name', 'old_diff', 'new_diff'])
+        except apiclient.http.HttpError:
+            return None
+        df.old_diff = pd.to_numeric(df.old_diff, errors='coerce')
+        df.new_diff = pd.to_numeric(df.new_diff, errors='coerce')
+        df.replace(0, np.nan, inplace=True)
+        df.new_diff = df.new_diff.combine_first(df.old_diff)
+        return df[df.new_diff <= self.max_difficulty].dropna()

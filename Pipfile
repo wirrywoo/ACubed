@@ -8,12 +8,17 @@ acubed = {file = ".", editable = true}
 click = "*"
 sphinx = "*"
 coverage = "*"
+fastapi = { extras = ["standard"], version = "*" }
+google-api-python-client = "*"
+google-auth-httplib2 = "*"
+google-auth-oauthlib = "*"
+matplotlib = "*"
 numpy = "*"
 pymongo = "*"
 python-dotenv = "*"
 requests = "*"
 requests_toolbelt = "*"
-fastapi = { extras = ["standard"], version = "*" }
+seaborn = "*"
 streamlit = "*"
 
 [dev-packages]

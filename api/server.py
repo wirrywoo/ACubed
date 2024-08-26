@@ -3,7 +3,7 @@
 from dotenv import find_dotenv, dotenv_values
 from fastapi import FastAPI, File, UploadFile
 
-from acubed.preprocessing import FFRChartPreprocessor, SMChartPreprocessor
+from acubed.preprocessing import FFRChartPreprocesser, SMChartPreprocesser
 
 app = FastAPI(
     title="ACubed",
@@ -18,14 +18,14 @@ async def root():
     config = {
         **dotenv_values(find_dotenv())
     }
-    print(FFRChartPreprocessor)
+    print(FFRChartPreprocesser)
     return config
 
 @app.post("/process_stepfile")
 def upload(file: UploadFile = File(...)):
     """Upload .sm file to streamlit app"""
     # try:
-    sm = SMChartPreprocessor()
+    sm = SMChartPreprocesser()
     result = sm.preprocess(file.file.read().decode('utf-8'))
     # except Exception:
     #     return {"message": "There was an error uploading the file"}

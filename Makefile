@@ -32,6 +32,10 @@ resolve_line_endings:
 refresh_database: 
 	pipenv run $(PYTHON_INTERPRETER) -m scripts.refresh_database
 
+## Generate visualization
+visualize: 
+	pipenv run $(PYTHON_INTERPRETER) -m scripts.visualize_contested_difficulties
+
 ## Removes acubed environment and factory reset workspace
 uninstall:
 	pipenv --rm

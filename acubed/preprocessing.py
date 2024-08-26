@@ -5,7 +5,7 @@ from itertools import groupby, zip_longest
 
 import numpy as np
 
-class FFRChartPreprocessor():
+class FFRChartPreprocesser():
 
     """Preprocesses FFR API response to a dictionary in following format:
     {
@@ -76,7 +76,7 @@ class FFRChartPreprocessor():
         return tuple(step[:2])
 
 
-class SMChartPreprocessor():
+class SMChartPreprocesser():
 
     """Preprocesses SM file to a dictionary in following format:
     {
