@@ -14,13 +14,16 @@ import pandas as pd
 # from ray.util.joblib import register_ray
 # register_ray()
 
+# from sklearn.linear_model import LinearRegression
+from sklearn.metrics import root_mean_squared_error
+from sklearn.utils import estimator_html_repr
+# from skpro.regression.residual import ResidualDouble
+
 from acubed.connector import FFRContestedDifficultySheet
 from acubed.density import ModelSelection
 from acubed.regressors import FFRDifficultyModel
 
-from sklearn.metrics import root_mean_squared_error
-from sklearn.linear_model import LinearRegression
-from skpro.regression.residual import ResidualDouble
+
 
 if __name__ == '__main__':
 
@@ -47,6 +50,9 @@ if __name__ == '__main__':
     # residuals = LinearRegression()
     # proba = ResidualDouble(model, residuals)
 
+    with open('my_estimator.html', 'w', encoding="utf-8") as f:
+        f.write(estimator_html_repr(model.pipeline))
+
     model.fit(train, np.fromiter(map(itemgetter('difficulty'), train), dtype=int))
 
     print(f"--- FFR Difficulty Model Trained: {time.time() - start_time} seconds ---")
@@ -54,8 +60,7 @@ if __name__ == '__main__':
     #y_pred = proba.predict_quantiles(test, alpha=[0.05, 0.5, 0.95])
     y_true = np.fromiter(map(itemgetter('difficulty'), test), dtype=int)
 
-    print(root_mean_squared_error(np.fromiter(map(itemgetter('difficulty'), train), dtype=int), model.predict(train)))
-
+    # print(root_mean_squared_error(np.fromiter(map(itemgetter('difficulty'), train), dtype=int), model.predict(train)))
     print(y_pred)
     print(y_true)
     print(root_mean_squared_error(y_true, y_pred))

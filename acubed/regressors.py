@@ -2,16 +2,14 @@
 
 import numpy as np
 
+from sklearn.base import BaseEstimator, RegressorMixin
+from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.pipeline import make_pipeline, Pipeline
+from sktime.regression.interval_based._tsf import TimeSeriesForestRegressor
+from sktime.transformations.compose import FitInTransform
 from sktime.transformations.series.subsequence_extraction import SubsequenceExtractionTransformer
 from sktime.transformations.series.subset import ColumnSelect
-from sktime.transformations.compose import FitInTransform
-from sktime.regression.interval_based._tsf import TimeSeriesForestRegressor
-from sklearn.ensemble import HistGradientBoostingRegressor
 
-from sklearn.utils import estimator_html_repr
-
-from sklearn.base import BaseEstimator, RegressorMixin
 from acubed.transformers import ChartDensityExtractor, AggregateFeaturesTransformer, WeightedVotingRegressor
 
 class FFRDifficultyModel(BaseEstimator, RegressorMixin):
@@ -20,27 +18,25 @@ class FFRDifficultyModel(BaseEstimator, RegressorMixin):
     def __init__(self, subseq_len):
         self.subseq_len = subseq_len
         self.columns = ['vertical', 'horizontal', 'interaction']
-
-        self.model = self.create_model()
-        with open('my_estimator.html', 'w') as f:
-            f.write(estimator_html_repr(self.create_model()))
+        self.pipeline = self.create_pipeline()
 
     def fit(self, X, y=None):
         """Fit parameters (similar to sklearn-style)"""
         #pylint: disable=invalid-name,unused-argument
-        return self.model.fit(X, y)
+        return self.pipeline.fit(X, y)
 
     def predict(self, X, y=None):
         """Apply predict (similar to sklearn-style)"""
         #pylint: disable=invalid-name,unused-argument
-        return self.model.predict(X)
+        return self.pipeline.predict(X)
 
     # def score(self, X, y=None):
     #     """Apply score (similar to sklearn-style)"""
     #     #pylint: disable=invalid-name,unused-argument
     #     return self.model.score(X, y)
 
-    def create_model(self):
+    def create_pipeline(self):
+        """Creates model pipeline for difficulty model"""
         return Pipeline([
             ('ffr_difficulty_model', WeightedVotingRegressor(
                 estimators=[

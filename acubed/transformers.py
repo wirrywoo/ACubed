@@ -41,8 +41,9 @@ class ChartDensityExtractor(BaseEstimator, TransformerMixin):
         if other:
             return self._map_many(map(f, iterable), *other)
         return map(f, iterable)
-    
+
 class AggregateFeaturesTransformer(BaseEstimator, TransformerMixin):
+    """Aggregates all features for stepfile."""
 
     def __init__(self, aggregate):
         self.aggregate = aggregate
@@ -56,18 +57,22 @@ class AggregateFeaturesTransformer(BaseEstimator, TransformerMixin):
         """Apply transforms (similar to sklearn-style)"""
         #pylint: disable=invalid-name,unused-argument
         file_length = X.groupby('instances').agg(file_length = ("interaction", "count")).rdiv(1)
-        df = pd.concat([X.groupby('instances').agg(self.aggregate), file_length], axis = 1) 
+        df = pd.concat([X.groupby('instances').agg(self.aggregate), file_length], axis = 1)
         df.columns = df.columns.get_level_values(0)
         return df
 
 class WeightedVotingRegressor(VotingRegressor):
+    """Variant of VotingRegressor with tunable weights"""
+    # pylint: disable=too-many-ancestors
 
     @property
     def weights(self):
+        """Override weights"""
         return self._weights
 
     @weights.setter
-    def weights(self, value): 
+    def weights(self, value):
+        """Override weights"""
         if isinstance(value, float):
             value = [value, 1-value]
         self._weights = value
