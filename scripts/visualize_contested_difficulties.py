@@ -6,10 +6,12 @@ from dotenv import find_dotenv, dotenv_values
 import pandas as pd
 
 from acubed.connector import FFRContestedDifficultySheet
-from acubed.kde import ModelSelection, HistogramVisualizer
+from acubed.density import ModelSelection, HistogramVisualizer
 
 
 if __name__ == '__main__':
+
+    #pylint: disable=duplicate-code
 
     LOG_FMT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     logging.basicConfig(level=logging.INFO, format=LOG_FMT)
@@ -20,10 +22,8 @@ if __name__ == '__main__':
         **dotenv_values(find_dotenv())
     }
 
-
     sheet = FFRContestedDifficultySheet(config['GSHEETS_SECRET_KEY'])
     model_selection = ModelSelection(config)
-
 
     contested_diff_data = pd.concat([sheet.extract(yr).new_diff for yr in
         [2022, 2023, 2024]]).reset_index().new_diff.to_numpy(dtype = int)

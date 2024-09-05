@@ -14,11 +14,16 @@ google-auth-httplib2 = "*"
 google-auth-oauthlib = "*"
 matplotlib = "*"
 numpy = "*"
+polars = "*"
 pymongo = "*"
 python-dotenv = "*"
+ray = { extras = ["train", "tune", "serve"], version = "*" }
 requests = "*"
 requests_toolbelt = "*"
+scikit-learn = "*"
 seaborn = "*"
+skpro = "*"
+sktime = "*"
 streamlit = "*"
 
 [dev-packages]
