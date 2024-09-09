@@ -33,4 +33,4 @@ if __name__ == '__main__':
         contested_diff_data, columns = ['Proposed FFR Difficulty']),
         title = 'Kernel Density Estimation of\n Contested Difficulties (2022 - present)')
 
-    histogram.savefig('./reports/figures/kde_contested_difficulties.png', dpi=300, bbox_inches = "tight")
+    histogram.savefig('./reports/figures/plots/kde_contested_difficulties.png', dpi=300, bbox_inches = "tight")

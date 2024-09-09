@@ -1,0 +1,141 @@
+\section{Technical Implementation}
+\label{sec:technical_implementation}
+
+\begin{center}
+
+\scalebox{0.75}{%
+\begin{tikzpicture}
+\node[inner sep=0pt] (ffr-database) at (0,1.5)
+    {\includegraphics[width=1.5cm]{figures/diagram/mysql.png}};
+\node[align = center, below = of ffr-database] [below=0.2cm of ffr-database]
+	{\text\,FFR\\ Database};
+
+\node[inner sep=0pt] (ffr-api) at (4,5)
+    {\includegraphics[width=1.5cm]{figures/diagram/php.png}};
+\node[align = center, below = of ffr-api] [below=0.2cm of ffr-api]
+	{\text\,FFR\\ API};
+
+\node[inner sep=0pt] (acubed-database-sync) at (8,8)
+    {\includegraphics[width=1.5cm]{figures/diagram/github-actions.png}};
+\node[align = center, below = of acubed-database-sync] [below=0.2cm of acubed-database-sync]
+	{\text\,ACubed\\ Database Sync};
+
+\node[inner sep=0pt] (acubed-database-reset) at (8,5)
+    {\includegraphics[width=1.5cm]{figures/diagram/github-actions.png}};
+\node[align = center, below = of acubed-database-reset] [below=0.2cm of acubed-database-reset]
+	{\text\,ACubed\\ Database Reset};
+
+    \node[inner sep=0pt] (acubed-database) at (12,5)
+    {\includegraphics[width=1.5cm]{figures/diagram/mongodb.png}};
+\node[align = center, below = of acubed-database] [below=0.2cm of acubed-database]
+	{\text\,ACubed\\ Database};
+    
+    \node[inner sep=0pt] (acubed-codebase) at (12,-1.5)
+    {\includegraphics[width=1.5cm]{figures/diagram/python.png}};
+\node[align = center, below = of acubed-codebase] [below=0.2cm of acubed-codebase]
+	{\text\,ACubed\\ Codebase};
+
+    \node[inner sep=0pt] (stepfile-difficulty-model) at (8,1.5)
+    {\includegraphics[width=1.5cm]{figures/diagram/difficulty-model.png}};
+\node[align = center, below = of stepfile-difficulty-model] [below=0.2cm of stepfile-difficulty-model]
+	{\text\,Stepfile Difficulty\\ Model};
+
+    \node[inner sep=0pt] (aaa-equivalency-model) at (8,-1.5)
+    {\includegraphics[width=1.5cm]{figures/diagram/aaa-equiv.png}};
+\node[align = center, below = of aaa-equivalency-model] [below=0.2cm of aaa-equivalency-model]
+	{\text\,AAA Equivalency\\ Model};
+
+    \node[inner sep=0pt] (skill-rating-model) at (8,-4.5)
+    {\includegraphics[width=1.5cm]{figures/diagram/skill-rating.png}};
+\node[align = center, below = of skill-rating-model] [below=0.2cm of skill-rating-model]
+	{\text\,Skill Rating\\ Model};
+
+    \node[inner sep=0pt] (acubed-api) at (4,1.5)
+    {\includegraphics[width=1.5cm]{figures/diagram/fastapi.png}};
+\node[align = center, below = of acubed-api] [below=0.2cm of acubed-api]
+	{\text\,ACubed\\ API};
+
+    \node[inner sep=0pt] (rcubed-codebase) at (4,-1.5)
+    {\includegraphics[width=1.5cm]{figures/diagram/rcubed.png}};
+\node[align = center, below = of rcubed-codebase] [below=0.2cm of rcubed-codebase]
+	{\text\,RCubed\\ Codebase};
+
+    \node[inner sep=0pt] (ffr-engine) at (4,-8)
+    {\includegraphics[width=1.5cm]{figures/diagram/air.png}};
+\node[align = center, below = of ffr-engine] [below=0.2cm of ffr-engine]
+	{\text\,FFR\\ Engine};
+
+    \node[inner sep=0pt] (ffr-website) at (8,-8)
+    {\includegraphics[width=1.5cm]{figures/diagram/website.png}};
+\node[align = center, below = of ffr-website] [below=0.2cm of ffr-website]
+	{\text\,FFR\\ Website};
+    
+% ffr-database to ffr-api
+\draw[-,thick] (0, 2.5) -- (0,5);
+\draw[->,thick] (0, 5) -- (3, 5);
+
+% ffr-api to acubed-database-reset
+\draw[->,dotted,thick] (5, 5) -- (7, 5);
+
+% ffr-api to acubed-database-sync
+\draw[-,thick] (4, 6) -- (4,8);
+\draw[->,thick] (4, 8) -- (7, 8);
+
+% acubed-database-sync to acubed-database
+\draw[-,thick] (9, 8) -- (12, 8);
+\draw[->,thick] (12, 8) -- (12,6);
+
+% acubed-database-sync to acubed-database
+\draw[->,dotted,thick] (9, 5) -- (11, 5);
+
+% acubed-database to acubed-codebase
+\draw[->,dotted,thick] (12, 3) -- (12, -0.5);
+
+% acubed-codebase to models
+\draw[-,dotted,thick] (11, -1.5) -- (10.5, -1.5);
+\draw[-,dotted,thick] (10.5, -1.5) -- (10.5, 1.5);
+\draw[-,dotted,thick] (10.5, -1.5) -- (10.5, -4.5);
+\draw[->,dotted,thick] (10.5, 1.5) -- (9, 1.5);
+\draw[->,dotted,thick] (10.5, -1.5) -- (9, -1.5);
+\draw[->,dotted,thick] (10.5, -4.5) -- (9, -4.5);
+
+% models to targets
+\draw[->,thick] (7, 1.5) -- (5, 1.5);
+\draw[->,thick] (7, -1.5) -- (5, -1.5);
+\draw[->,thick] (8, -6.5) -- (8, -7);
+
+% acubed-api to ffr-database
+\draw[->,dotted,thick] (3, 1.5) -- (1, 1.5);
+
+% ffr-database to ffr-codebase
+\draw[-,thick] (0, -0.5) -- (0, -1.5);
+\draw[->,thick] (0, -1.5) -- (3, -1.5);
+
+% ffr-codebase to ffr-engine
+\draw[->,thick] (4, -3.5) -- (4, -7);
+
+% ffr-engine to ffr-website
+\draw[->,thick] (5, -8) -- (7, -8);
+
+
+\end{tikzpicture}
+}
+\end{center}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fermentum sapien a felis mattis fermentum. Nunc laoreet eros in malesuada ultricies. Sed purus libero, blandit vitae convallis eu, lacinia ut justo. Curabitur est mauris, tincidunt in lacinia et, varius nec tortor. Nunc eu turpis feugiat, porta diam non, tincidunt lorem. Sed pulvinar, metus a volutpat malesuada, urna quam tempor nisi, nec cursus urna dolor vitae felis. Pellentesque posuere neque sapien, quis sagittis neque luctus quis. Quisque ullamcorper dignissim suscipit. Maecenas pharetra, nisi a pretium placerat, ante est posuere mauris, nec auctor mi diam in nisl. Pellentesque ligula magna, volutpat sed nunc vitae, auctor gravida arcu. Maecenas sit amet lacus justo.
+
+\vspace{2mm}
+
+In eu finibus purus. Etiam accumsan erat justo, eu efficitur elit faucibus non. In faucibus vitae nisl dapibus ullamcorper. In fermentum leo eu purus rutrum suscipit. Pellentesque dictum efficitur purus, eu consequat metus pretium a. Vivamus feugiat urna ac accumsan suscipit. Praesent pretium sem risus, a congue felis placerat sed. Maecenas in nisi auctor, aliquet tortor ut, posuere justo. Cras lacinia bibendum elit, ut cursus turpis eleifend vitae. Nunc tempus libero quis suscipit scelerisque. Curabitur aliquet tempor facilisis. Suspendisse auctor, arcu non dictum luctus, sem tortor varius lorem, non commodo nibh arcu non elit. Maecenas maximus maximus justo, vitae bibendum orci semper eget.
+
+\vspace{2mm}
+
+Sed pulvinar leo eget nunc placerat, at cursus quam commodo. Vivamus nunc nisl, posuere id nunc ac, vehicula suscipit dui. Vivamus sodales urna felis, eget gravida nunc dignissim vel. Nam sed libero quis elit fermentum rhoncus. Vestibulum vitae libero et lectus ullamcorper congue eu in ex. In id ultricies enim. Integer volutpat nisi a lorem malesuada ultricies. Pellentesque ut commodo nulla. Nulla eu diam id lectus aliquet venenatis at quis ipsum.
+
+\vspace{2mm}
+
+Nulla ac mauris pharetra turpis interdum faucibus. Sed aliquam tellus ac finibus rutrum. Integer non vulputate sapien. Duis ullamcorper, felis non hendrerit interdum, ex lorem varius mauris, non consectetur eros tellus et ipsum. Nunc scelerisque turpis eu ullamcorper dictum. Cras ligula libero, pellentesque et pretium sed, tristique eget augue. Curabitur magna lectus, aliquam nec ullamcorper a, finibus pulvinar odio. Maecenas dictum, nisl et ornare porttitor, tortor metus molestie massa, ut porta nisi leo non velit. Maecenas quis rhoncus urna. Praesent a lacus vitae erat sagittis facilisis ac ac risus.
+
+\vspace{2mm}
+
+Quisque dapibus semper semper. Phasellus dignissim fringilla mollis. Duis volutpat lacus eget fringilla pretium. Phasellus ut orci non justo viverra aliquet sed at risus. Nulla eu tellus tincidunt, ultrices lectus vitae, tincidunt nibh. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nullam sem orci, fringilla sed nisi et, rhoncus sollicitudin odio. Nam sodales tortor ante, sit amet porttitor ipsum cursus id. Maecenas dapibus mauris nunc, ut placerat dui volutpat vitae. Donec viverra nulla nec libero iaculis mollis. Nullam viverra sit amet felis eu condimentum. In et tempor nibh. Phasellus interdum nibh ornare, scelerisque elit ac, fringilla arcu. Nullam rutrum vestibulum sollicitudin. Proin sem ante, tincidunt et nisi et, ultricies vulputate purus.

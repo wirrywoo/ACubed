@@ -1,0 +1,51 @@
+\section{Stepfile Difficulty Model}
+\label{sec:stepfile_difficulty}
+
+\textbf{Plan:}
+\begin{itemize}
+	\item Untangle objective definitions of difficulty from its inherent subjectivity. Identify that the goal of creating this machine learning model is to maximize the objective representation of difficulty in the overall model.
+	      	      
+	\item Clarify the definition of difficulty by introducing judge window sizes. Also dissociate processing difficulty from execution difficulty and focus paper on execution. Add visuals:
+	      \begin{itemize}
+	      	\item Difficulty to FC: 235 ms
+	      	\item Difficulty to Clean FC: 201 ms
+	      	\item Difficulty to Maximize Score: 153.9 ms
+	      	\item Difficulty to Maximize Score under MS based scoring: 117.5 ms
+	      	\item Difficulty to AAA: 100 ms
+	      	\item Difficulty to AAAA: 34 ms
+	      \end{itemize}
+	\item Address concerns about inaccurate difficulty measurements current in game and the non-existing idea of "true" difficulty using crowdsourcing papers \href{https://crowdsourcing-class.org/readings/downloads/quality-control/Quality-Management-on-Amazon-Mechanical-Turk.pdf#page4}{here} and \href{https://crowdsourcing-class.org/readings/downloads/ml/EM.pdf}{here}.
+	      	      
+	      \item{Introduce Contested Difficulty Sheet and define train-test split using KDE estimations of proposed difficulties}
+	      	      
+	      \item{Introduce objective features VerticalDensity and HorizontalDensity using pen-tapping as an example. Also mention chart augmentation considerations:}
+	      \begin{itemize}
+	      	\item Mirror: Indirectly accounted in VerticalDensity's definition
+	      	\item Offset: Indirectly accounted in preprocessing of FFR's API response.
+	      	\item Colors: Categorized under "processing difficulty"; users can alter this.
+	      	\item Scroll Speed Mod: Categorized under "processing difficulty"; users can alter this.
+	      \end{itemize}
+	      	      
+	\item Dissociate local features from global features. Song length is a global feature, subsequence extraction is a local feature. Mention how ensembling works with the consideration of "difficulty spikes" in many charts.
+	      	      
+	\item Introduce model architecture and implementation. Consider regressing over the target variable transformations of difficulty due to domain knowledge of difficulty.
+	      	      
+	\item Run experiments with proposed model, share results, and identify method to measure the quality of the predictions.
+	      	      
+	\item Extend proposed model to account for uprated and downrated stepfiles, run experiments and compare model performance with already tracked uprated scores.
+	      	          
+\end{itemize}
+
+\vspace{2mm}
+
+
+% In addition to issues mentioned earlier in this report, the evolution of FFR's stepfile difficulty measurement demonstrates the varying perspectives on what constitutes a challenging stepfile. A notable factor contributing to this lack of a consensus is the absence of standardized criteria for determining difficulty. This section aims to establish such standards in order to establish a more reliable and trusted model for evaluating stepfile difficulty, by examining the Contested Difficulties spreadsheet and identifying the difficulty values that hold the most consensus within the FFR community.
+
+\subsection{Contested Difficulty Spreadsheet Analysis}
+
+The Contested Difficulty Spreadsheet, managed by \texttt{Zlyice}, is a collaborative Google Sheets document utilized for tracking proposed changes to stepfile difficulty measurements based on input from users. It is presumed that the individual suggesting a difficulty measurement possesses a degree of knowledge regarding the factors that warrant such a rating for the stepfile. While it must be acknowledged that all proposed measurements are inherently vulnerable to volunteer bias, the process of crowd-sourcing these partial inputs serves to reduce the impact of individual bias on any given stepfile. This approach aims to align the definition of difficulty with the perspectives of the vocal minority within the wider community.
+
+\vspace{2mm}
+
+
+In order to align our model scoring with the prevailing consensus on the quantification of stepfile difficulty within the community, we conduct a thorough analysis of the proposed difficulty levels over the period spanning from 2022 to the present date. This analysis serves as the basis for our development of a train-test split strategy, in which the distribution of proposed difficulties is utilized to allocate our data into appropriately representative training, validation, and test sets.
