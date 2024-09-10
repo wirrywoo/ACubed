@@ -1,7 +1,11 @@
-name: Build LaTeX document
-on: [push]
+name: Build ACubed report
+on:
+  push:
+    paths:
+      - 'reports/**'
+      - '!reports/figures/**'
 jobs:
-  build_latex:
+  build_acubed_report:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -12,6 +16,7 @@ jobs:
         uses: xu-cheng/latex-action@v3
         with:
           root_file: main.tex
+          working_directory: ./reports/
       - name: Upload PDF file
         uses: actions/upload-artifact@v4
         with:
@@ -21,7 +26,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: updated acubed report from acubed-report 
-          branch: main
+          branch: master
           file_pattern: '*.pdf'
-          repository: ./reports
+          repository: ./reports/
           create_branch: false
