@@ -1,7 +1,11 @@
-name: Build LaTeX document
-on: [push]
+name: Build ACubed report
+on:
+  push:
+    paths:
+      - 'reports/**'
+      - '!reports/figures/**'
 jobs:
-  build_latex:
+  build_acubed_report:
     runs-on: ubuntu-latest
     permissions:
       contents: write
