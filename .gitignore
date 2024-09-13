@@ -253,4 +253,3 @@ cython_debug/
 *.pyc
 
 *.lock
-./reports/main.pdf
