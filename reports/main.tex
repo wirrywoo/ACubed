@@ -19,6 +19,8 @@
 % Math
 \usepackage{amssymb}
 \usepackage{amsmath} % Required for some math elements 
+\usepackage{amsthm}
+\usepackage{mathtools}
 
 % Other
 \usepackage{algorithmic}
@@ -53,6 +55,10 @@
 }
 
 \setlength{\tabcolsep}{0pt}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{remark}{Remark}
+\newtheorem{corollary}{Corollary}[theorem]
 
 % \captionsetup[table]{
 % %  font = it,
