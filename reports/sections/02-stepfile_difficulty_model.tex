@@ -13,7 +13,7 @@ We will begin this section by introducing some definitions and proposing a theor
 \end{itemize}
 
 \begin{theorem}
-Given a stepfile, the true difficulty rating can be estimated with a machine learning model using only the objective features of the stepfile.
+Given a stepfile, the true difficulty rating can be estimated with a machine learning model using the objective stepfile features and the upper echelons of player telemetry.
 \end{theorem}
 
 \begin{proof}
@@ -22,19 +22,19 @@ to justify this claim. Under the assumption that stepfile difficulty is additive
 
 $$\text{Diff}_{\text{obs}}^{(A_i)} = \text{Diff}_{\text{obj}}^{(A_i)} + \text{Diff}_{\text{sub}}^{(A_i)}.$$
 
-Because each player $A_1, A_2, \cdots, A_n$ are exposed to the same step layout in the stepfile, their unbiased perceptions of stepfile difficulty are shared and equal. Mathematically, we have
+Because each player $A_1, A_2, \cdots, A_n$ are exposed to the same step layout in a given stepfile, their unbiased assessments of difficulty are mutually shared. This can be mathematically expressed as follows:
 
 $$\text{Diff}_{\text{obj}} \coloneq \text{Diff}_{\text{obj}}^{(A_1)} = \text{Diff}_{\text{obj}}^{(A_2)} = \cdots = \text{Diff}_{\text{obj}}^{(A_n)}.$$
 
-Define $A = (A_1, \cdots, A_n)$ to represent a community of $n$ players. When we aggregate all $n$ player's difficulty assessments, we can determine the observed difficulty rating subject to community bias:
+Define $A = (A_1, \cdots, A_n)$ to represent a community of $n$ players. When we aggregate all $n$ player's difficulty assessments, we can determine the observed difficulty rating of a stepfile subject to community bias:
 
 $$\text{Diff}_{\text{obs}}^{(A)} = \text{Diff}_{\text{obj}} + \text{Diff}_{\text{sub}}^{(A)}.$$
 
-Hypothetically, if we are able to gather the entire population's feedback on the difficulty of a stepfile (i.e. $n \rightarrow \infty$), we can establish a true difficulty measure that depends on human limitations and minimized player subjectivity. Therefore, for some constant unknown value $\text{Diff}_{\text{human}}$, we have the following:
+In theory, by obtaining feedback from the entire population regarding the difficulty of a stepfile, with an unlimited sample (i.e. $n \rightarrow \infty$), it may be possible to establish an accurate measurement of difficulty that considers human limitations and reduces the influence of player subjectivity. Therefore, for some constant unknown value $\text{Diff}_{\text{human}}$, we have the following:
 
 $$\lim_{n \rightarrow \infty} \text{Diff}_{\text{obs}}^{(A)} = \text{Diff}_{\text{true}}\mspace{50mu} \text{and} \mspace{50mu} \lim_{n \rightarrow \infty} \text{Diff}_{\text{sub}}^{(A)} = \text{Diff}_{\text{human}}.$$
 
-Using the above asymptotics, we can conclude that,
+Using the above asymptotics, we can conclude that
 $$\text{Diff}_{\text{true}} = \text{Diff}_{\text{obj}} + \text{Diff}_{\text{human}}.$$
 \end{proof}
 
@@ -46,18 +46,18 @@ The deviation between $\text{Diff}_{\text{true}}$ and $\text{Diff}_{\text{obs}}^
 $$|\text{Diff}_{\text{obs}}^{(A)} - \text{Diff}_{\text{true}}| = |\text{Diff}_{\text{sub}}^{(A)} - \text{Diff}_{\text{human}}|$$
 \end{corollary}
 
-To fully utilize machine learning to solve this challenging problem with trusted target values, we need to minimize the deviation between $\text{Diff}_{\text{obs}}^{(A)}$ and $\text{Diff}_{\text{true}}$. From the above corollary, this can be accomplished by utilizing community feedback to estimate $\text{Diff}_{\text{human}}$, the role which difficulty consultants play when acknowledging a new opinion from a community member. This requires us to request more feedback from the community, which is highly prone to self-selection bias and group attribution error.
+In order to ensure the credibility of the given target values, it is crucial to minimize the deviation between $\text{Diff}_{\text{obs}}^{(A)}$ and $\text{Diff}_{\text{true}}$. From the above corollary, this can be accomplished by utilizing community feedback to estimate $\text{Diff}_{\text{human}}$, the role which difficulty consultants play when receiving new opinions from community members. This requires us to gather more feedback from the community, which is highly susceptible to self-selection bias and group attribution error.
 
 \vspace{2mm}
 
-Instead, we will rely on these ratings (despite data labeling errors) as targets in our supervised learning problem to estimate $\text{Diff}_{\text{true}}$ by maximizing the explained variation of $\text{Diff}_{\text{obj}}$. Doing so enables us to rely less on our inability to control identified biases in our analysis, while creating future opportunities to improve the representation of $\text{Diff}_{\text{true}}$ through further research on player telemetry and improved feature engineering from available stepfile data.
+Instead of attempting to correct data labeling errors, we will use the ratings as targets in our supervised learning problem to estimate the true difficulty $\text{Diff}_{\text{true}}$ by maximizing the explained variation of the objective stepfile features. Doing so enables us to rely less on our inability to control identified biases in our analysis, while creating future opportunities to improve the definition of true difficulty through through continued research on player telemetry and improved feature engineering from available stepfile data.
 \vspace{2mm}
 
 Let's assume that there is some relationship between $Y \coloneq  \text{Diff}_{\text{true}}$ and features $X_{\text{obj}} = (X_{\text{obj}}^1, \cdots, X_{\text{obj}}^n)$ which can be written in the very general form:
 
 $$Y = f(X_{\text{obj}}) + \epsilon$$
 
-where $f$ is some fixed and unknown function of $X_{\text{obj}}^1, \cdots, X_{\text{obj}}^n$ and $\epsilon$ is a random error term, independent of $X_{\text{obj}}$ and has mean zero. Note that based on our previously discussed objective, the error term is designed to capture the explained variance of stepfile difficulty with respect to human limitations.
+where $f$ is some fixed and unknown function of $X_{\text{obj}}^1, \cdots, X_{\text{obj}}^n$ and $\epsilon$ is a random error term, independent of $X_{\text{obj}}$ and has mean zero. Given our previously stated goal, it is important to note that the error term is specifically formulated to account for the explained variance of stepfile difficulty that can be attributed to inherent human limitations.
 
 \vspace{2mm}
 
@@ -67,9 +67,7 @@ Let $\hat{f}$ be an estimate of $f$ that yields prediction $\hat{Y} = \hat{f}(X_
     & = [f(X_{\text{obj}}) - \hat{f}(X_{\text{obj}})]^2 + \text{Var}(\epsilon)
 \end{align*}
 
-Our primary goal is to estimate $f$ with the aim of
-minimizing the reducible error $[f(X_{\text{obj}}) - \hat{f}(X_{\text{obj}})]^2$. It should be noted that the features used in this report will satisfy inferential properties of stepfile difficulty, which is to be discussed in a later section.
-
+The main objective of our research is to accurately calculate the function $f$, while also minimizing the reducible error $[f(X_{\text{obj}}) - \hat{f}(X_{\text{obj}})]^2$. It is important to acknowledge that the features selected in this study will comply with inferential properties related to stepfile difficulty, as further explained in a subsequent section. 
 \vspace{2mm}
 
 \textbf{Plan:}
