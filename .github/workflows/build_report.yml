@@ -17,8 +17,8 @@ jobs:
       - name: Upload PDF file
         uses: actions/upload-artifact@v4
         with:
-          name: PDF
-          path: main.pdf
+          name: acubed-report
+          path: ./reports/main.pdf
   release-report:
     name: Download report
     runs-on: ubuntu-latest
@@ -27,6 +27,6 @@ jobs:
     - name: Download artifact
       uses: actions/download-artifact@v4
       with:
-        name: PDF
+        name: acubed-report
     - name: Test artifact download
       run: ls -R
