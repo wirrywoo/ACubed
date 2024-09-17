@@ -41,9 +41,12 @@
 \usepackage{circuitikz}
 \usetikzlibrary{arrows,shapes,positioning}
 \usepackage{subfig}
+\usepackage{xcolor}
 
 \usepackage{booktabs}
 
+
+\usetikzlibrary{shadings} % LaTeX and plain TeX when using TikZ
 
 
 
@@ -65,13 +68,14 @@
 %   labelfont = it
 % }
 
+\definecolor{perfect-color}{HTML}{228B22}
 
 
 %----------------------------------------------------------------------------------------
 %	MAIN PART
 %----------------------------------------------------------------------------------------
 \begin{document}
-\title{Redesigning Skill-Based Metrics \\ in Flash Flash Revolution}
+\title{Redesigning FFR Skill-Based Metrics}
 %\subtitle{Proposal to Improve Difficulty, AAA Equivalency, and Skill Rating Formulas}
 \author{Wilson Cheung (WirryWoo)\\
 \textit{Georgia Institute of Technology}}
@@ -88,7 +92,7 @@
 \begin{abstract}
 	\normalsize
 	%% Text of the abstract
-	\textbf{Abstract:} The objective of this study is to explore methods to improve the scalability and standardization of skill-based metrics in Flash Flash Revolution. For stepfile difficulty, we propose a new method that combines ensemble tree-based techniques with a time series extrinsic regression model to capture local and global patterns in stepfiles using objectively defined time-sensitive features. Additionally, we introduce a framework that utilizes the expectation-maximization algorithm to determine a player's AAA equivalency rating and overall skill rating, providing a quantitative measure of their skill. These machine learning models have been implemented in ACubed, a Python module designed to continuously update the underlying formula for skill-based metrics, in order to enhance the competitive experience for all players on FFR.
+	\textbf{Abstract:} The objective of this study is to explore methods to improve the scalability and standardization of skill-based metrics in Flash Flash Revolution (FFR). For stepfile difficulty, we propose an ensemble model that combines tree-based methods with a time series extrinsic regression model to capture local and global patterns in stepfiles using objectively defined time-sensitive features. Additionally, we introduce a framework that utilizes the expectation-maximization algorithm to determine a player's AAA equivalency rating and overall skill rating, providing a quantitative measure of their skill. These models can be optimized for training and evaluation through the use of ACubed, a Python module that incorporates a machine learning framework for updating the underlying formula of skill-based metrics, with the ultimate goal of improving the overall competitive experience for FFR players.
 \end{abstract}
 
 %----------------------------------------------------------------------------------------

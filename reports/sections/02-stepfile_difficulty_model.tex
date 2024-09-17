@@ -1,9 +1,149 @@
 \section{Stepfile Difficulty Model}
 \label{sec:stepfile_difficulty}
 
-Stepfile difficulty has been a recurring topic of debate within the FFR community. The task of determining an objective measure for completing a specific sequence of keystrokes requires manual effort, making it susceptible to subjectivity. Despite efforts to address this issue through the use of machine learning and artificial intelligence, no definitive solutions have yet been identified. This is partially due to the potential for conflating the definition of difficulty; every player has unique physical capabilities that may result in biased judgments and disagreements when assessing the overall community's difficulty evaluation. To address this issue, we must first differentiate between the objective characteristics of stepfile difficulty and its inherent subjectivity.
+Stepfile difficulty has been a recurring topic of debate within the FFR community. The task to define how difficult it is for a player to execute a specific sequence of keystrokes requires manual effort to study shared patterns across stepfiles, making it highly susceptible to player subjectivity. Despite efforts to address this issue through the use of machine learning and artificial intelligence, no definitive solutions have yet been identified. This is largely due to the fact that individual players have varying interpretations of what constitutes a difficult stepfile, informed by their own unique playing objectives and physical abilities. As a result, community resolutions on stepfile difficulty often give rise to biased judgments and disagreements. In order to effectively address these concerns, we must first standardize the definition of stepfile difficulty, then differentiate between the associated objective characteristics from its inherent subjectivity.
 
-\subsection{Problem Formulation}
+\subsection{Various Definitions of Stepfile Difficulty}
+
+The aforementioned playing objectives can be categorized into two groups: constant weighted and variable weighted. This section focuses on providing numerous examples of both types of playing objectives, discussing their integration into our analysis, and establishing a default playing objective to be utilized in this report. It is imperative to acknowledge that, at present, ACubed currently supports only stepfile difficulty measurements under discretized constant weighted playing objectives. Future developments of ACubed are anticipated to broaden its support to include other playing objectives.
+
+\subsubsection{Constant-Weighted Playing Objectives}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+
+    \begin{scope}
+        \shade[top color=perfect-color, bottom color=perfect-color] (-1,-1) rectangle (4,0);
+\shade[top color=perfect-color, bottom color=perfect-color] (-1,0) rectangle (4,1);
+\node[inner sep=0pt] (left) at (0,0)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,0)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,0)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+\node[inner sep=0pt] at (-1,-1)[label=left:{\footnotesize\texttt{-117ms}}]{};
+\draw[opacity=0.5,dashed] (-1, -1) -- (4, -1); 
+\node[inner sep=0pt] at (-1,0) [label=left:{\footnotesize \texttt{0ms}}]{};
+\draw[opacity=0.5,dashed] (-1, 0) -- (4, 0); 
+\node[inner sep=0pt] at (-1,1) [label=left:{\footnotesize \texttt{118ms}}]{};
+\draw[opacity=0.5,dashed] (-1, 1) -- (4, 1);
+\node[inner sep=0pt] at (1.5, -1.5) [label=center:{\footnotesize \textit{(a)} Full-Combo (FC)}]{};
+    \end{scope}
+
+    \begin{scope}[xshift=8cm]
+\shade[top color=perfect-color, bottom color=perfect-color] (-1,-1) rectangle (4,0);
+\shade[top color=perfect-color, bottom color=perfect-color] (-1,0) rectangle (4,0.083/0.118);
+\node[inner sep=0pt] (left) at (0,0)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,0)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,0)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+\node[inner sep=0pt] at (-1,-1)[label=left:{\footnotesize\texttt{-117ms}}]{};
+\draw[opacity=0.5,dashed] (-1, -1) -- (4, -1); 
+\node[inner sep=0pt] at (-1,0) [label=left:{\footnotesize \texttt{0ms}}]{};
+\draw[opacity=0.5,dashed] (-1, 0) -- (4, 0); 
+\node[inner sep=0pt] at (-1,1) [label=left:{\footnotesize \texttt{118ms}}]{};
+\draw[opacity=0.5,dashed] (-1, 1) -- (4, 1);
+\node[inner sep=0pt] at (1.5, -1.5) [label=center:{\footnotesize \textit{(b)} Clean Full-Combo (FC)}]{};
+    \end{scope}
+
+    \begin{scope}[yshift=-3.5cm]
+        \shade[top color=perfect-color, bottom color=perfect-color, opacity=0.5] (-1,-1) rectangle (4,-0.050/0.117);
+\shade[top color=perfect-color, bottom color=perfect-color] (-1,-0.050/0.117) rectangle (4,0);
+\shade[top color=perfect-color, bottom color=perfect-color] (-1,0) rectangle (4,0.050/0.118);
+\shade[top color=perfect-color, bottom color=perfect-color, opacity=0.5] (-1,0.050/0.118) rectangle (4,0.083/0.118);
+\shade[top color=perfect-color, bottom color=perfect-color, opacity=0.1] (-1,0.083/0.118) rectangle (4,1);
+\node[inner sep=0pt] (left) at (0,0)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,0)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,0)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+\node[inner sep=0pt] at (-1,-1)[label=left:{\footnotesize\texttt{-117ms}}]{};
+\draw[opacity=0.5,dashed] (-1, -1) -- (4, -1); 
+\node[inner sep=0pt] at (-1,0) [label=left:{\footnotesize \texttt{0ms}}]{};
+\draw[opacity=0.5,dashed] (-1, 0) -- (4, 0); 
+\node[inner sep=0pt] at (-1,1) [label=left:{\footnotesize \texttt{118ms}}]{};
+\draw[opacity=0.5,dashed] (-1, 1) -- (4, 1);
+\node[inner sep=0pt] at (1.5, -1.5) [label=center:{\footnotesize \textit{(c)} Maximize Score under FFR Scoring (Default)}]{};
+    \end{scope}
+
+    \begin{scope}[xshift=8cm, yshift=-3.5cm]
+\shade[top color=perfect-color, bottom color=white] (-1,-1) rectangle (4,0);
+\shade[top color=white, bottom color=perfect-color] (-1,0) rectangle (4,1);
+\node[inner sep=0pt] (left) at (0,0)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,0)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,0)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+\node[inner sep=0pt] at (-1,-1)[label=left:{\footnotesize\texttt{-117ms}}]{};
+\draw[opacity=0.5,dashed] (-1, -1) -- (4, -1); 
+\node[inner sep=0pt] at (-1,0) [label=left:{\footnotesize\texttt{0ms}}]{};
+\draw[opacity=0.5,dashed] (-1, 0) -- (4, 0); 
+\node[inner sep=0pt] at (-1,1) [label=left:{\footnotesize\texttt{118ms}}]{};
+\draw[opacity=0.5,dashed] (-1, 1) -- (4, 1);
+\node[inner sep=0pt] at (1.5, -1.5) [label=center:{\footnotesize \textit{(d)} Maximize Score under MS-based Timings}]{};
+    \end{scope}
+
+    \begin{scope}[yshift=-7cm]
+\shade[top color=perfect-color, bottom color=perfect-color] (-1,-0.050/0.117) rectangle (4,0.050/0.118);
+\node[inner sep=0pt] (left) at (0,0)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,0)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,0)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+\node[inner sep=0pt] at (-1,-1)[label=left:{\footnotesize\texttt{-117ms}}]{};
+\draw[opacity=0.5,dashed] (-1, -1) -- (4, -1); 
+\node[inner sep=0pt] at (-1,0) [label=left:{\footnotesize \texttt{0ms}}]{};
+\draw[opacity=0.5,dashed] (-1, 0) -- (4, 0); 
+\node[inner sep=0pt] at (-1,1) [label=left:{\footnotesize \texttt{118ms}}]{};
+\draw[opacity=0.5,dashed] (-1, 1) -- (4, 1);
+\node[inner sep=0pt] at (1.5, -1.5) [label=center:{\footnotesize \textit{(e)} All Perfects (AAA)}]{};
+    \end{scope}
+
+    \begin{scope}[xshift=8cm, yshift=-7cm]
+\shade[top color=perfect-color, bottom color=perfect-color] (-1,-0.017/0.117) rectangle (4,0.017/0.118);
+\node[inner sep=0pt] (left) at (0,0)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,0)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,0)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+\node[inner sep=0pt] at (-1,-1)[label=left:{\footnotesize\texttt{-117ms}}]{};
+\draw[opacity=0.5,dashed] (-1, -1) -- (4, -1); 
+\node[inner sep=0pt] at (-1,0) [label=left:{\footnotesize \texttt{0ms}}]{};
+\draw[opacity=0.5,dashed] (-1, 0) -- (4, 0); 
+\node[inner sep=0pt] at (-1,1) [label=left:{\footnotesize \texttt{118ms}}]{};
+\draw[opacity=0.5,dashed] (-1, 1) -- (4, 1);
+\node[inner sep=0pt] at (1.5, -1.5) [label=center:{\footnotesize \textit{(f)} All Marvelous (AAAA)}]{};
+    \end{scope}
+
+\end{tikzpicture}
+
+\caption{Constant-Weighted Playing Objectives to define Stepfile Difficulty.} \label{fig:M1}
+\end{figure}
+
+
+\subsubsection{Variable-Weighted Playing Objectives}
+
+
+\subsection{Machine Learning Problem Formulation}
 
 We will begin this section by introducing some definitions and proposing a theorem:
 
@@ -69,6 +209,11 @@ Let $\hat{f}$ be an estimate of $f$ that yields prediction $\hat{Y} = \hat{f}(X_
 
 The main objective of our research is to accurately calculate the function $f$, while also minimizing the reducible error $[f(X_{\text{obj}}) - \hat{f}(X_{\text{obj}})]^2$. It is important to acknowledge that the features selected in this study will comply with inferential properties related to stepfile difficulty, as further explained in a subsequent section. 
 \vspace{2mm}
+
+
+
+
+
 
 \textbf{Plan:}
 \begin{itemize}

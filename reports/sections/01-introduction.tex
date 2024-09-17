@@ -1,31 +1,32 @@
 \section{Introduction and Motivation}
 \label{sec:introduction}
 
-\href{https://www.Flash Flash Revolution.com/}{Flash Flash Revolution} (FFR) is a renowned Flash-based vertical scrolling rhythm game that was originally developed by \texttt{Synthlight} in 2002. Similar to its predecessor Dance Dance Revolution (DDR), players are presented with a sequence of arrows, referred to as \textit{stepfiles}, which are meticulously calibrated and synchronized to the background music. The main objective is to maximize the raw score by pressing the corresponding keys within a precise timing window of less than one-quarter of a second, ensuring a perfect alignment between the arrows in motion and the static receptors. Following the deprecation of Adobe Flash Player in 2020, FFR is now accessible through RCubed, an open-source engine developed and actively maintained by \texttt{Velocity} \cite{20200427}.
+\href{https://www.Flash Flash Revolution.com/}{Flash Flash Revolution} (FFR) is a renowned Flash-based vertical scroll rhythm game that was originally developed by \texttt{Synthlight} in 2002. Similar to its predecessor Dance Dance Revolution (DDR), players are presented with a sequence of arrows, referred to as \textit{stepfiles}, which are meticulously calibrated and synchronized to the background music. The main objective is to maximize the raw score by pressing the corresponding keys within a precise timing window of less than one-quarter of a second, ensuring a perfect alignment between the arrows in motion and the static receptors. Following the deprecation of Adobe Flash Player in 2020, FFR is now accessible on the Windows operating system through RCubed, an open-source engine developed and actively maintained by \texttt{Velocity} \cite{20200427}.
 
 \vspace{2mm}
 
-The player base of FFR maintains a consistently robust presence, with several thousand users actively engaging in gameplay every month. Among this devoted community are competitive players hailing from online rhythm games such as osu!mania and Etterna, with a notable number participating in official tournaments each year. To ensure a positive experience for these players, many systems have been created to objectively measure stepfile difficulty, fairly reward scores based on playing performance, and determine ratings that accurately reflect the player's skill. Although these systems are widely adopted in the community, their design has sparked considerable concerns regarding the reliability and scalability of their skill measurement.
+The player base of FFR maintains a consistently robust presence, with several thousand users actively engaging in gameplay every month. Among this devoted community are competitive players hailing from online rhythm games such as \href{https://osu.ppy.sh/}{osu!mania} and \href{https://etternaonline.com/}{Etterna}, with a notable number participating in official tournaments each year. To ensure a positive experience for these players, many systems have been created to objectively measure stepfile difficulty, fairly reward scores based on playing performance, and determine ratings that accurately reflect the player's skill. Although these systems are widely adopted in the community, their design has sparked considerable concerns regarding the reliability and scalability of their skill measurement.
 
 \vspace{2mm}
 
-Before delving into these areas of discussion, it is important to acknowledge that there will be many assumptions present throughout this analysis. We will provide sufficient justification for any assumptions made, and it is important to note that the proposed solutions in this paper are not absolute and definitive. If there is any disagreement with any identified assumptions, it is encouraged for individuals to develop an alternative modeling approach based on their preferred assumptions.
+Before delving into these areas of discussion, it is important to acknowledge that there will be many assumptions present throughout this analysis. We will provide sufficient justification for any assumptions made, and it is important to note that the proposed solutions in this paper are not absolute and definitive. If there is any disagreement with any identified assumptions, it is encouraged for individuals to develop an alternative modeling approach based on their preferred assumptions. Moreover, it is important to mention that all figures provided in this report have been displayed under the downscroll setting to indicate that the arrows are assumed to be moving from the top to the bottom of the screen.
 
 \subsection{Overview of FFR's Skill-Based Metrics and Their Shortcomings}
 \subsubsection{Stepfile Difficulty}
-Every stepfile possesses intrinsic levels of challenge concerning the player's execution due to their distinct structural characteristics. However, quantifying this measure continues to be a challenging question. In the initial stages of its development, the measurement of stepfile difficulty in FFR was based on a scale ranging from \texttt{1} to \texttt{12}, where \texttt{1} represented the easiest and \texttt{12} represented the most difficult level. However, in 2012, \texttt{nois-or-e}, \texttt{One Winged Angel}, and \texttt{stavie33} improved upon this method by introducing a more granular scale ranging from \texttt{1} to \texttt{120}. This update was announced on the forums \cite{20120608} and has since been adopted as the current difficulty scale in use.
+Every stepfile possesses intrinsic levels of challenge concerning the player's execution due to their distinct structural characteristics. However, quantifying this measure continues to be a challenging question. In the initial stages of its development, stepfile difficulty was measured on an integer scale ranging from \texttt{1} to \texttt{12}, with \texttt{1} denoting the easiest and \texttt{12} denoting the most challenging levels in the game. In an effort to improve the representativeness of difficulty in light of a growing number of stepfiles, \texttt{nois-or-e}, \texttt{One Winged Angel}, and \texttt{stavie33} revamped the difficulty scale to encompass a broader range from \texttt{1} to \texttt{120}. This update was announced on the forums \cite{20120608} and has since been adopted as the current difficulty scale in use.
 
 \vspace{2mm}
 
-To assess the difficulty of new stepfiles in the engine, a team of difficulty consultants within the community assigns a numerical rating on an integer scale of \texttt{1} to \texttt{120}, taking into consideration factors such as feedback from other players and the level of challenge posed by existing stepfiles of similar difficulty ratings. However, this process raises the following concerns:
+To assess the difficulty of new incoming stepfiles in the engine, a team of difficulty consultants within the community collaboratively assigns a numerical rating, considering factors such as input from other players and the level of difficulty presented by existing stepfiles rated at a similar level. After achieving a consensus, any necessary modifications are implemented in the game. Despite its reliability, this approach also raises certain concerns:
+
 \begin{itemize}
 	\item By solely relying on pairwise stepfile comparisons to determine the difficulty rating of an unrated stepfile, other assigned ratings are not considered during comparison, resulting in an inconsistent set of criteria established across stepfiles to define difficulty.
-	\item Proposed difficulty ratings crowdsourced from the vocal minority are inherently subject to self-selection bias by the current process's mechanism design. Moreover, manual stepfile difficulty assignment for easier files is generally less accurate due to higher skill bias in the vocal minority.
+	\item Proposed difficulty ratings crowdsourced from the vocal minority are inherently subject to self-selection bias and group attribution error by the current process's mechanism design. Consequently, manual stepfile difficulty assignment for easier files is generally less accurate due to higher skill bias in the vocal minority.
 	\item There is an inability to 
 	      predict difficulty at any rate not equal to \texttt{1.0x}, which has recently gained popularity for competitive play within the community.
 \end{itemize}
 
-Additionally, this current method of determining the difficulty of stepfiles is a manually daunting task, prompting many developers to seek algorithmic methods to measure stepfile difficulty automatically. With the growing advancements in machine learning and artificial intelligence, these methods have become increasingly popular for creating stepfile difficulty models. Recently in 2023, \texttt{Trumpet63} successfully developed an API wrapper incorporating a trained GRU model with a mean-squared error of 11 \cite{20230216}, to help estimate the difficulty of new stepfiles in the FFR Batch Submission page.
+Additionally, this current method of determining the difficulty of stepfiles is a manually daunting task, prompting many developers to seek algorithmic methods to measure stepfile difficulty automatically. With the growing advancements in machine learning and artificial intelligence, these methods have become increasingly popular for creating stepfile difficulty models. Recently in 2023, \texttt{Trumpet63} successfully developed an API wrapper incorporating a trained GRU model with a mean-squared error of 11 \cite{20230216}, to help estimate the difficulty of new stepfiles in the \href{https://www.flashflashrevolution.com/~velocity/ffrjs/difficulty/}{Difficulty Estimator page}.
 
 \vspace{2mm}
 
@@ -34,14 +35,14 @@ Although \texttt{Trumpet63}’s model has primarily received positive sentiment 
 \begin{itemize}
 	\item There are numerous interpretations of stepfile difficulty, making it challenging to establish a standardized definition that is universally accepted by the community.
 	\item There is a subjective component inherent in the concept of difficulty that needs to be decoupled from the overall dataset to appropriately perform model training and inference.
-	\item There is uncertainty on how stepfile patterns (e.g. jacks, jumpstream, etc.) can be appropriately defined and integrated as reliable features in model training. 
+	\item There is uncertainty on how meta stepfile patterns (e.g. jacks, jumpstream, etc.) can be appropriately defined and integrated as reliable features in model training. 
 \end{itemize}
 
 Given the progress made in measuring stepfile difficulty and its widespread use as a means of facilitating discussions on player's proficiency, it is evident that this measure holds great significance in the FFR community. Therefore, it is imperative to establish a definitive and thorough understanding of stepfile difficulty, in order to mitigate any further challenges in defining other skill-based metrics.
 
 \subsubsection{AAA Equivalency}
 
-The \textit{AAA equivalency} was developed to determine the level of difficulty at which a player's performance on a specific stepfile can result in the highest attainable score (AAA). Particularly, the equivalence is determined by comparing the number of ``raw goods" obtained on a given difficulty level to scoring a AAA on another difficulty level. The initial formula defining this metric was proposed by \texttt{Trumpet63} after conducting a graphical analysis of player performance during the 10\textsuperscript{th} Official FFR Tournament \cite{20140930}. However, as official tournaments have continued, the formula has been continuously updated and refined based on new data. These adjustments have resulted in the current version of the formula \cite{20150216}, which is outlined below.
+The \textit{AAA equivalency} was developed to determine the level of difficulty at which a player's performance on a specific stepfile can result in the highest attainable score (AAA). Particularly, this rating is determined by equating the player's performance on a stepfile under a given difficulty level to their potential ability to score a AAA on a stepfile under a different difficulty rating. The initial formula defining this metric was proposed by \texttt{Trumpet63} after conducting a graphical analysis of player performance during the 10\textsuperscript{th} Official FFR Tournament \cite{20140930}. However, as official tournaments have continued, the formula has been continuously updated and refined based on new data. These adjustments have resulted in the current version of the formula \cite{20150216}, which is outlined below.
 \begin{align*}
 	AAA_{eq} & = (D + \alpha) \left( \frac{\delta - NGC \cdot \lambda}{\delta}\right)^{1 / \beta} - \alpha  \\
 	\\
@@ -73,8 +74,8 @@ Although the notion of AAA equivalency is widely accepted and acknowledged in th
 
 \begin{itemize}
 	\item Certain stepfiles have been identified to be more conducive to maximizing AAA equivalency, leading to unwarranted inflation when measuring the skill rating of a player.
-	\item Players who attain impressive results with a high number of raw goods may receive inaccurate and undeserved ratings, particularly for many of the most difficult stepfiles in FFR.
-	\item The current AAA equivalency formula poses challenges in its interpretation, causing individuals to question the rating they have received.
+	\item Players who attain impressive results with a score above the predefined threshold may receive inaccurate and undeserved ratings, particularly for many of the hardest stepfiles in game.
+	\item The current AAA equivalency formula poses challenges in its interpretation, causing many individuals to question the rating they have received.
 \end{itemize}
 
 Several solutions have been proposed on Discord to address the issues identified with the AAA equivalency metric. Proposed by \texttt{Lights}, a potential solution that shows promise suggests incorporating additional weighting in the formula to prevent players from exploiting the metric and inflate their skill ratings, while also accurately recognizing AAA equivalency for players who score above the current threshold of 28 raw goods on some of the most difficult stepfiles in FFR. However, these solutions are still in the process of being investigated and no significant progress has been made thus far.
@@ -83,7 +84,7 @@ Several solutions have been proposed on Discord to address the issues identified
 
 The \textit{Skill Rating} metric, which is determined by analyzing players' top-performing scores across their entire play record, serves as the primary basis for ranking players in FFR. Introduced by \texttt{Trumpet63}, \texttt{PrawnSkunk}, and \texttt{Silvuh}, this ranking metric is initially defined by computing an exponentially weighted average of a player's top $N$ scores \cite{20150216}. Particularly, the weighting mechanism that was rolled out in its initial release defines the weights $w := w(k, r)$ using the following formula for all ranks $r$ satisfying $r \in \{1, 2, \cdots, N\}$:
 \begin{align*}
-	w & = \frac{(e^k - 1)(e^{k(r-1)} - e^{kN})}{(e^{kN} - 1) - Ne^{kN}(e^k - 1)} 
+	w & = \frac{e^{k(r-1)} - e^{Nk}}{\displaystyle \sum_{j = 1}^{N} \left(e^{k(j-1)} - e^{Nk}\right)}
 \end{align*}
 
 
@@ -95,7 +96,14 @@ where $k = - \frac{1}{4}$ and $N = 15$.
 
 \vspace{2mm}
 
-Under this configuration, note that over 75\% of a player's skill rating is determined by the Top 5 scores. With the growing amount of stepfiles in FFR, there is an increase in the likelihood of a player obtaining a high score through chance, ultimately resulting in an incorrect representation of their true skill under this particular weighting mechanism. Moreover, relying on performance data indicative of a player's skill ceiling has been known to result in incorrect official tournament placements each year, thus creating an unfair disadvantage for certain players and diminishing their chances of winning.
+Under this configuration, note that:
+\begin{align*}
+	 \left. \sum_{r = 1}^5 w(k, r) \right|_{k = - \frac{1}{4}} & = \displaystyle \sum_{r = 1}^5 \frac{\exp\left(\displaystyle -\frac{r-1}{4}\right) - \exp\left(\displaystyle -\frac{15}{4}\right)}{\displaystyle\sum_{j = 1}^{15} \left[\exp\left(\displaystyle-\frac{j-1}{4}\right) - \exp\left(\displaystyle-\frac{15}{4}\right)\right]}\\
+  &= \displaystyle \left( \displaystyle \frac{1 - \exp\left(\displaystyle-\frac{15}{4}\right)}{1 - \exp\left(\displaystyle-\frac{1}{4}\right)} - 15 \exp\left(\displaystyle-\frac{15}{4}\right) \right)^{-1}\left( \displaystyle \frac{1 - \exp\left(\displaystyle-\frac{5}{4}\right)}{1 - \exp\left(\displaystyle-\frac{1}{4}\right)} - 5 \exp\left(\displaystyle-\frac{15}{4}\right) \right)\\
+  &\approx 0.76519.
+\end{align*}
+
+In other words, under this weighting, over 75\% of a player's skill rating is determined by the Top 5 scores. With the growing amount of stepfiles in FFR, there is an increase in the likelihood of a player obtaining a high score through chance, ultimately resulting in an incorrect representation of their true skill under this particular weighting mechanism. Moreover, relying on performance data indicative of a player's skill ceiling has been known to result in incorrect official tournament placements each year, thus creating an unfair disadvantage for certain players and diminishing their chances of winning.
 
 \vspace{2mm}
 
@@ -106,9 +114,14 @@ To address some of these challenges, a new approach called Seasonal Skill Rating
 \end{align*}
 
 
-\vspace{2mm}
+For the initial implementation of the Seasonal Skill Rating, $N = 50$ was deliberately selected to evaluate its performance in comparison to the established Skill Rating metric. Under this weighting mechanism, we have:
+\begin{align*}
+	\sum_{r = 1}^5 w(r) & = \displaystyle \sum_{r = 1}^5 \frac{51 - r}{25 \cdot 51} \\
+  &= \frac{1}{5} - \frac{15}{25 \cdot 51}\\
+  &\approx 0.188235.
+\end{align*}
 
-For the initial implementation of the Seasonal Skill Rating, $N = 50$ was deliberately selected to evaluate its performance in comparison to the established Skill Rating metric. Based on favorable reviews following the first season's conclusion, the weighting mechanism of the Skill Rating model was revised to incorporate the new formula, which has since remained the primary approach for determining skill rating.
+This suggests that the player's skill rating is influenced by their Top 5 scores to a lesser extent, accounting for less than 20\% of their overall skill representation and significantly improving the first proposed weightings for skill rating. Based on favorable reviews following the first season's conclusion, the weighting mechanism of the Skill Rating model was revised to incorporate the new formula, which has since remained the primary approach for determining skill rating.
 \vspace{2mm}
 
 Despite the improvements, there are still several limitations in the Skill Rating model that necessitate further investigation: 
@@ -127,314 +140,414 @@ In this section, we shift our focus to a contentious topic and explore the drawb
 
 During gameplay, players observe similar patterns within numerous stepfiles and use these patterns to centralize discussions about strategies to optimally hit them. These patterns, referred to as \textit{meta stepfile features} in this report, are also currently used to draw comparisons between two different stepfiles to determine their level of difficulty. These include but are not limited to the following:
 
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+
+    \begin{scope}
+\node[inner sep=0pt] (left) at (0,0)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,0)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,0)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+\node[inner sep=0pt] (up) at (0,1.5)
+    {\includegraphics[width=1cm]{figures/004/left.png}};
+\node[inner sep=0pt] (right) at (3,1.5)
+    {\includegraphics[width=1cm]{figures/004/right.png}};
+\node[inner sep=0pt] at (1.5, -1) [label=center:{\footnotesize \textit{(a)} Jump}]{};
+    \end{scope}
+
+    \begin{scope}[xshift=5cm]
+\node[inner sep=0pt] (left) at (0,0)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,0)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,0)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+\node[inner sep=0pt] (up) at (0,1.5)
+    {\includegraphics[width=1cm]{figures/004/left.png}};
+\node[inner sep=0pt] (up) at (1,1.5)
+    {\includegraphics[width=1cm]{figures/004/down.png}};
+\node[inner sep=0pt] (right) at (3,1.5)
+    {\includegraphics[width=1cm]{figures/004/right.png}};
+\node[inner sep=0pt] at (1.5, -1) [label=center:{\footnotesize \textit{(b)} Hand}]{};
+    \end{scope}
+
+    \begin{scope}[xshift=10cm]
+\node[inner sep=0pt] (left) at (0,0)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,0)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,0)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+\node[inner sep=0pt] (up) at (0,1.5)
+    {\includegraphics[width=1cm]{figures/004/left.png}};
+\node[inner sep=0pt] (up) at (1,1.5)
+    {\includegraphics[width=1cm]{figures/004/down.png}};
+\node[inner sep=0pt] (up) at (2,1.5)
+    {\includegraphics[width=1cm]{figures/004/up.png}};
+\node[inner sep=0pt] (right) at (3,1.5)
+    {\includegraphics[width=1cm]{figures/004/right.png}};
+\node[inner sep=0pt] at (1.5, -1) [label=center:{\footnotesize \textit{(c)} Quad}]{};
+    \end{scope}
+
+\end{tikzpicture}
+\end{figure}
+
 \begin{itemize}
 	\item A \textit{jump} is a common pattern in which players must simultaneously hit two notes. The term originated in DDR, as executing a jump in the game requires players to physically jump to successfully hit the notes.
 	      
-	\item \textit{Jumpgluts} comprises a rapid succession of jumps occurring within a short timeframe.
+	% \item \textit{Jumpgluts} comprises a rapid succession of jumps occurring within a short timeframe.
 	      
-	\item \textit{Jumpchains} are sequences that alternate between jumps and a single connecting arrow. The connecting arrow is required to be the same between the two neighboring jumps.
+	% \item \textit{Jumpchains} are sequences that alternate between jumps and a single connecting arrow. The connecting arrow is required to be the same between the two neighboring jumps.
 	      
-	\item A \textit{hand} is a common pattern in which players must hit three notes simultaneously. The term "hands" denotes a type of jump on a dance pad involving three notes, which necessitates using both feet and a hand for execution.
+	\item A \textit{hand} is a common pattern in which players must hit three notes simultaneously. The term ``hands" denotes a type of jump on a dance pad involving three notes, which necessitates using both feet and a hand for execution.
 	      
 	\item A \textit{quad} is another common pattern in which players must simultaneously hit four notes.
-	      
-	\item \textit{Grace notes} are defined as concise, rapidly executed notes that lead into a subsequent note, representing sustained noise.  During gameplay, these can often be hit as a jump due to their close timing proximity.
+\end{itemize}
+
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+
+    \begin{scope}
+\node[inner sep=0pt] (left) at (0,0)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,0)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,0)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+\node[inner sep=0pt] (up) at (1,2.4)
+    {\includegraphics[width=1cm]{figures/004/down.png}};
+\node[inner sep=0pt] (right) at (2,2.1)
+    {\includegraphics[width=1cm]{figures/016/up.png}};
+\node[inner sep=0pt] (up) at (1,1.8)
+    {\includegraphics[width=1cm]{figures/008/down.png}};
+\node[inner sep=0pt] (right) at (2,1.5)
+    {\includegraphics[width=1cm]{figures/016/up.png}};
+\node[inner sep=0pt] (up) at (1,1.2)
+    {\includegraphics[width=1cm]{figures/004/down.png}};
+\node[inner sep=0pt] at (1.5, -1) [label=center:{\footnotesize \textit{(a)} Trill}]{};
+    \end{scope}
+
+    \begin{scope}[xshift=5cm]
+\node[inner sep=0pt] (left) at (0,0)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,0)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,0)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+\node[inner sep=0pt] (up) at (2,2.4)
+    {\includegraphics[width=1cm]{figures/004/up.png}};
+\node[inner sep=0pt] (right) at (3,2.1)
+    {\includegraphics[width=1cm]{figures/016/right.png}};
+\node[inner sep=0pt] (up) at (2,1.8)
+    {\includegraphics[width=1cm]{figures/008/up.png}};
+\node[inner sep=0pt] (right) at (3,1.5)
+    {\includegraphics[width=1cm]{figures/016/right.png}};
+\node[inner sep=0pt] (up) at (2,1.2)
+    {\includegraphics[width=1cm]{figures/004/up.png}};
+\node[inner sep=0pt] at (1.5, -1) [label=center:{\footnotesize \textit{(b)} One-Handed Trill}]{};
+    \end{scope}
+
+    \begin{scope}[xshift=10cm]
+\node[inner sep=0pt] (left) at (0,0)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,0)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,0)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+\node[inner sep=0pt] (up) at (0,2.4)
+    {\includegraphics[width=1cm]{figures/004/left.png}};
+\node[inner sep=0pt] (up) at (1,2.4)
+    {\includegraphics[width=1cm]{figures/004/down.png}};
+\node[inner sep=0pt] (right) at (2,2.1)
+    {\includegraphics[width=1cm]{figures/016/up.png}};
+\node[inner sep=0pt] (right) at (3,2.1)
+    {\includegraphics[width=1cm]{figures/016/right.png}};
+\node[inner sep=0pt] (up) at (0,1.8)
+    {\includegraphics[width=1cm]{figures/008/left.png}};
+\node[inner sep=0pt] (up) at (1,1.8)
+    {\includegraphics[width=1cm]{figures/008/down.png}};
+\node[inner sep=0pt] (right) at (2,1.5)
+    {\includegraphics[width=1cm]{figures/016/up.png}};
+\node[inner sep=0pt] (right) at (3,1.5)
+    {\includegraphics[width=1cm]{figures/016/right.png}};
+\node[inner sep=0pt] (up) at (0,1.2)
+    {\includegraphics[width=1cm]{figures/004/left.png}};
+\node[inner sep=0pt] (up) at (1,1.2)
+    {\includegraphics[width=1cm]{figures/004/down.png}};
+\node[inner sep=0pt] at (1.5, -1) [label=center:{\footnotesize \textit{(c)} Jumptrill}]{};
+    \end{scope}
+
+\end{tikzpicture}
+\end{figure}
+
+
+\begin{itemize}
+	% \item \textit{Grace notes} are defined as concise, rapidly executed notes that lead into a subsequent note, representing sustained noise.  During gameplay, these can often be hit as a jump due to their close timing proximity.
 	      
 	\item \textit{Trills} are alternating patterns of two arrows, with \textit{one-handed trills} requiring players to continuously alternate between the two arrows with only one hand.
 	      
 	\item \textit{Jumptrills} refer to trills characterized by two alternating jumps that occur consecutively without any note overlap.
-	      
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+
+    \begin{scope}
+\node[inner sep=0pt] (left) at (0,0)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,0)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,0)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+\node[inner sep=0pt] (up) at (2,3.2)
+    {\includegraphics[width=1cm]{figures/004/up.png}};
+\node[inner sep=0pt] (right) at (2,2.7)
+    {\includegraphics[width=1cm]{figures/016/up.png}};
+\node[inner sep=0pt] (up) at (2,2.2)
+    {\includegraphics[width=1cm]{figures/008/up.png}};
+\node[inner sep=0pt] (right) at (2,1.7)
+    {\includegraphics[width=1cm]{figures/016/up.png}};
+\node[inner sep=0pt] (up) at (2,1.2)
+    {\includegraphics[width=1cm]{figures/004/up.png}};
+\node[inner sep=0pt] at (1.5, -1) [label=center:{\footnotesize \textit{(a)} Jacks}]{};
+    \end{scope}
+
+    \begin{scope}[xshift=5cm]
+\node[inner sep=0pt] (left) at (0,0)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,0)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,0)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+\node[inner sep=0pt] (up) at (0,3.2)
+    {\includegraphics[width=1cm]{figures/004/left.png}};
+\node[inner sep=0pt] (up) at (2,3.2)
+    {\includegraphics[width=1cm]{figures/004/up.png}};
+\node[inner sep=0pt] (right) at (3,2.7)
+    {\includegraphics[width=1cm]{figures/016/right.png}};
+\node[inner sep=0pt] (right) at (2,2.7)
+    {\includegraphics[width=1cm]{figures/016/up.png}};
+\node[inner sep=0pt] (up) at (2,2.2)
+    {\includegraphics[width=1cm]{figures/008/up.png}};
+\node[inner sep=0pt] (up) at (1,2.2)
+    {\includegraphics[width=1cm]{figures/008/down.png}};
+\node[inner sep=0pt] (right) at (1,1.7)
+    {\includegraphics[width=1cm]{figures/016/down.png}};
+\node[inner sep=0pt] (right) at (3,1.7)
+    {\includegraphics[width=1cm]{figures/016/right.png}};
+\node[inner sep=0pt] (up) at (0,1.2)
+    {\includegraphics[width=1cm]{figures/004/left.png}};
+\node[inner sep=0pt] (up) at (3,1.2)
+    {\includegraphics[width=1cm]{figures/004/right.png}};
+\node[inner sep=0pt] at (1.5, -1) [label=center:{\footnotesize \textit{(b)} JumpJacks}]{};
+    \end{scope}
+
+    \begin{scope}[xshift=10cm]
+\node[inner sep=0pt] (left) at (0,0)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,0)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,0)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+\node[inner sep=0pt] (up) at (0,3.2)
+    {\includegraphics[width=1cm]{figures/004/left.png}};
+\node[inner sep=0pt] (up) at (1,3.2)
+    {\includegraphics[width=1cm]{figures/004/down.png}};
+\node[inner sep=0pt] (up) at (2,3.2)
+    {\includegraphics[width=1cm]{figures/004/up.png}};
+\node[inner sep=0pt] (right) at (3,2.7)
+    {\includegraphics[width=1cm]{figures/016/right.png}};
+\node[inner sep=0pt] (right) at (2,2.7)
+    {\includegraphics[width=1cm]{figures/016/up.png}};
+\node[inner sep=0pt] (right) at (0,2.7)
+    {\includegraphics[width=1cm]{figures/016/left.png}};
+\node[inner sep=0pt] (up) at (0,2.2)
+    {\includegraphics[width=1cm]{figures/008/left.png}};
+\node[inner sep=0pt] (up) at (3,2.2)
+    {\includegraphics[width=1cm]{figures/008/right.png}};
+\node[inner sep=0pt] (up) at (1,2.2)
+    {\includegraphics[width=1cm]{figures/008/down.png}};
+\node[inner sep=0pt] (right) at (1,1.7)
+    {\includegraphics[width=1cm]{figures/016/down.png}};
+\node[inner sep=0pt] (right) at (2,1.7)
+    {\includegraphics[width=1cm]{figures/016/up.png}};
+\node[inner sep=0pt] (right) at (3,1.7)
+    {\includegraphics[width=1cm]{figures/016/right.png}};
+\node[inner sep=0pt] (up) at (0,1.2)
+    {\includegraphics[width=1cm]{figures/004/left.png}};
+\node[inner sep=0pt] (up) at (2,1.2)
+    {\includegraphics[width=1cm]{figures/004/up.png}};
+\node[inner sep=0pt] (up) at (3,1.2)
+    {\includegraphics[width=1cm]{figures/004/right.png}};
+
+\node[inner sep=0pt] at (1.5, -1) [label=center:{\footnotesize \textit{(c)} Chordjacks}]{};
+    \end{scope}
+
+\end{tikzpicture}
+\end{figure}
+
+
+\begin{itemize}
 	\item \textit{Jacks} are arrow sequences that involve hitting the same arrow three or more times in a row. When it is only required to execute two consecutive hits, it is classified as a \textit{minijack}.
 	      
 	\item \textit{Jumpjacks} are a type of jacks in which the same jump is executed three or more times, whereas \textit{minijumpjacks} involve executing the same jump twice. 
 	      
 	\item \textit{Chordjacks} refers to a collection of patterns that incorporate different combinations of jacks and chords. This term has gained prominence within the meta and has become increasingly prevalent in recent times. 
-	      
+
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+
+    \begin{scope}
+\node[inner sep=0pt] (left) at (0,0)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,0)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,0)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+\node[inner sep=0pt] (up) at (1,4.7)
+    {\includegraphics[width=1cm]{figures/016/down.png}};
+\node[inner sep=0pt] (up) at (3,4.2)
+    {\includegraphics[width=1cm]{figures/008/right.png}};
+\node[inner sep=0pt] (up) at (2,3.7)
+    {\includegraphics[width=1cm]{figures/016/up.png}};
+\node[inner sep=0pt] (up) at (1,3.2)
+    {\includegraphics[width=1cm]{figures/004/down.png}};
+\node[inner sep=0pt] (right) at (0,2.7)
+    {\includegraphics[width=1cm]{figures/016/left.png}};
+\node[inner sep=0pt] (up) at (2,2.2)
+    {\includegraphics[width=1cm]{figures/008/up.png}};
+\node[inner sep=0pt] (right) at (3,1.7)
+    {\includegraphics[width=1cm]{figures/016/right.png}};
+\node[inner sep=0pt] (up) at (0,1.2)
+    {\includegraphics[width=1cm]{figures/004/left.png}};
+\node[inner sep=0pt] at (1.5, -1) [label=center:{\footnotesize \textit{(a)} Streams}]{};
+    \end{scope}
+
+    \begin{scope}[xshift=5cm]
+\node[inner sep=0pt] (left) at (0,0)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,0)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,0)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+\node[inner sep=0pt] (up) at (3,4.7)
+    {\includegraphics[width=1cm]{figures/016/right.png}};
+\node[inner sep=0pt] (up) at (2,4.2)
+    {\includegraphics[width=1cm]{figures/008/up.png}};
+\node[inner sep=0pt] (up) at (1,3.7)
+    {\includegraphics[width=1cm]{figures/016/down.png}};
+\node[inner sep=0pt] (up) at (0,3.2)
+    {\includegraphics[width=1cm]{figures/004/left.png}};
+\node[inner sep=0pt] (right) at (3,2.7)
+    {\includegraphics[width=1cm]{figures/016/right.png}};
+\node[inner sep=0pt] (up) at (2,2.2)
+    {\includegraphics[width=1cm]{figures/008/up.png}};
+\node[inner sep=0pt] (right) at (1,1.7)
+    {\includegraphics[width=1cm]{figures/016/down.png}};
+\node[inner sep=0pt] (up) at (0,1.2)
+    {\includegraphics[width=1cm]{figures/004/left.png}};
+\node[inner sep=0pt] at (1.5, -1) [label=center:{\footnotesize \textit{(b)} Roll}]{};
+    \end{scope}
+
+    \begin{scope}[xshift=10cm]
+\node[inner sep=0pt] (left) at (0,0)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,0)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,0)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+\node[inner sep=0pt] (up) at (1,4.7)
+    {\includegraphics[width=1cm]{figures/016/down.png}};
+\node[inner sep=0pt] (up) at (0,4.2)
+    {\includegraphics[width=1cm]{figures/008/left.png}};
+\node[inner sep=0pt] (up) at (3,4.2)
+    {\includegraphics[width=1cm]{figures/008/right.png}};
+\node[inner sep=0pt] (up) at (2,3.7)
+    {\includegraphics[width=1cm]{figures/016/up.png}};
+\node[inner sep=0pt] (up) at (3,3.2)
+    {\includegraphics[width=1cm]{figures/004/right.png}};
+\node[inner sep=0pt] (up) at (1,3.2)
+    {\includegraphics[width=1cm]{figures/004/down.png}};
+\node[inner sep=0pt] (right) at (0,2.7)
+    {\includegraphics[width=1cm]{figures/016/left.png}};
+\node[inner sep=0pt] (up) at (1,2.2)
+    {\includegraphics[width=1cm]{figures/008/down.png}};
+\node[inner sep=0pt] (up) at (2,2.2)
+    {\includegraphics[width=1cm]{figures/008/up.png}};
+\node[inner sep=0pt] (right) at (3,1.7)
+    {\includegraphics[width=1cm]{figures/016/right.png}};
+\node[inner sep=0pt] (up) at (2,1.2)
+    {\includegraphics[width=1cm]{figures/004/up.png}};
+\node[inner sep=0pt] (up) at (0,1.2)
+    {\includegraphics[width=1cm]{figures/004/left.png}};
+
+\node[inner sep=0pt] at (1.5, -1) [label=center:{\footnotesize \textit{(c)} Jumpstream}]{};
+    \end{scope}
+
+\end{tikzpicture}
+\end{figure}
+
+
+
+\begin{itemize}
 	\item \textit{Streams} are uninterrupted successions of single notes, typically performed at quick tempos and may vary in note quantization. A \textit{roll} is a particular type of stream that has a defined sequence of patterns.
 	      
 	\item \textit{Jumpstreams} and \textit{handstreams} are types of streams characterized by an increased level of complexity due to the inclusion of jumps and hands, respectively.
 	      
-	\item \textit{Triplets} refer to a broad category of isolated patterns that consist of three individual notes played in succession, while \textit{gallops} are characterized by a similar structure consisting of two successive notes.
+	% \item \textit{Triplets} refer to a broad category of isolated patterns that consist of three individual notes played in succession, while \textit{gallops} are characterized by a similar structure consisting of two successive notes.
 	      
-	\item \textit{Running men} features a recurrent anchor arrow within a stream, with the remaining notes alternating between two or three other arrows. Note that in the case of a single alternate note, it is classified as a trill. 
+	% \item \textit{Running men} features a recurrent anchor arrow within a stream, with the remaining notes alternating between two or three other arrows. Note that in the case of a single alternate note, it is classified as a trill. 
 	      
-	\item \textit{Staircases} refer to patterns that evoke a sense of ascent or descent, achieved by traversing the arrow keys on the keyboard in a left-to-right or right-to-left sequence.
-	      
+	% \item \textit{Staircases} refer to patterns that evoke a sense of ascent or descent, achieved by traversing the arrow keys on the keyboard in a left-to-right or right-to-left sequence.
+\end{itemize}
+\begin{itemize}
 	\item \textit{Bursts} refer to intricate arrangements of notes that occur in quick succession, often without adhering to a specific structure in their sequencing.
 	      
 	\item \textit{Polyrhythms} refer to the occurrence of two distinct rhythms played simultaneously, resulting in a complex and disorienting pattern.
 \end{itemize}
 
-However, there are numerous obstacles that arise when attempting to apply definitions of meta patterns from a stepfile to different rates. For instance, at very high rates, rolls compressed in a condensed time period (as demonstrated in Figure \ref{example-jumptrillable}, assuming that the note spacing in Figure  \ref{example-nonjumptrillable} is significantly larger than the allocated perfect window) are often treated as jumptrills. This technique, known as "jumptrilling," is commonly used in competitive play to maximize scores in FFR. As this skill is easily accessible for many players, it is natural for them to equate it with the overall difficulty of the stepfile, potentially leading to a perception that the file is easier than initially thought.
+However, there are several challenges that arise when utilizing meta patterns to establish the difficulty of a stepfile. For instance, at very high rates, rolls compressed in a condensed time period are often treated as jumptrills. This technique, known as ``jumptrilling," is commonly used in competitive play to maximize scores in FFR. As this skill is easily accessible for many players, it is natural for them to equate it with the overall difficulty of the stepfile, potentially leading to a perception that the file is easier than initially thought.
 
+\vspace{2mm}
 
-\begin{center}
-	\begin{table}[ht]
-		\begin{minipage}{.5\linewidth}
-			\centering
-			\begin{tabular}[b]{cccc}
-				\includegraphics[width=1cm]{figures/receptor/left.png}
-				  & \includegraphics[width=1cm]{figures/receptor/down.png}  
-				  & \includegraphics[width=1cm]{figures/receptor/up.png}    
-				  & \includegraphics[width=1cm]{figures/receptor/right.png} 
-				\\
-				\includegraphics[width=1cm]{figures/004/left.png}
-				  &                                                         
-				  &                                                         
-				  &                                                         
-				\\
-				[-20pt]
-				
-				  & \includegraphics[width=1cm]{figures/032/down.png}       
-				  &                                                         
-				  &                                                         
-				\\
-				[-20pt]
-				  &                                                         
-				  & \includegraphics[width=1cm]{figures/016/up.png}         
-				  &                                                         
-				\\
-				[-20pt]
-				  &                                                         
-				  &                                                         
-				  & \includegraphics[width=1cm]{figures/032/right.png}      
-				\\
-				[-20pt]
-				\includegraphics[width=1cm]{figures/008/left.png}
-				  &                                                         
-				  &                                                         
-				  &                                                         
-				\\
-				[-20pt]
-				
-				  & \includegraphics[width=1cm]{figures/032/down.png}       
-				  &                                                         
-				  &                                                         
-				\\
-				[-20pt]
-				  &                                                         
-				  & \includegraphics[width=1cm]{figures/016/up.png}         
-				  &                                                         
-				\\
-				[-20pt]
-				  &                                                         
-				  &                                                         
-				  & \includegraphics[width=1cm]{figures/032/right.png}      
-				                    
-			\end{tabular}%
-			
-			\medskip
-			\captionsetup{width=0.75\linewidth}
-			\captionof{figure}{Non-``jumptrillable'' rolls under sufficiently slow scroll speed in upscroll direction.}
-			\label{example-nonjumptrillable}
-			    
-		\end{minipage}\hfill
-		\begin{minipage}{.5\linewidth}
-			\centering
-			\begin{tabular}[b]{cccc}
-				\includegraphics[width=1cm]{figures/receptor/left.png}
-				  & \includegraphics[width=1cm]{figures/receptor/down.png}  
-				  & \includegraphics[width=1cm]{figures/receptor/up.png}    
-				  & \includegraphics[width=1cm]{figures/receptor/right.png} 
-				\\
-				
-				\includegraphics[width=1cm]{figures/004/left.png}
-				  &                                                         
-				  &                                                         
-				  &                                                         
-				\\
-				[-27.5pt]
-				
-				  & \includegraphics[width=1cm]{figures/032/down.png}       
-				  &                                                         
-				  &                                                         
-				\\
-				[-27.5pt]
-				  &                                                         
-				  & \includegraphics[width=1cm]{figures/016/up.png}         
-				  &                                                         
-				\\
-				[-27.5pt]
-				  &                                                         
-				  &                                                         
-				  & \includegraphics[width=1cm]{figures/032/right.png}      
-				\\
-				[-27.5pt]
-				\includegraphics[width=1cm]{figures/008/left.png}
-				  &                                                         
-				  &                                                         
-				  &                                                         
-				\\
-				[-27.5pt]
-				
-				  & \includegraphics[width=1cm]{figures/032/down.png}       
-				  &                                                         
-				  &                                                         
-				\\
-				[-27.5pt]
-				  &                                                         
-				  & \includegraphics[width=1cm]{figures/016/up.png}         
-				  &                                                         
-				\\
-				[-27.5pt]
-				  &                                                         
-				  &                                                         
-				  & \includegraphics[width=1cm]{figures/032/right.png}      
-			\end{tabular}%
-			
-			\medskip
-			\vspace{52.5pt}
-			\captionsetup{width=0.75\linewidth}
-			\captionof{figure}{``Jumptrillable'' rolls under sufficiently fast scroll speed in upscroll direction.}
-			\label{example-jumptrillable}
-		\end{minipage}
-	\end{table}
-\end{center}
+On the contrary, the execution of jack patterns is commonly recognized as a highly individualized skill, with lower-ranked players often demonstrating greater proficiency in these patterns compared to their higher-ranked counterparts. Since the current ranking system rely heavily on stepfile difficulty, individuals with a one-dimensional skill set may potentially inflate their skill level and consequently, be inaccurately placed in official tournaments. Conflicting opinions on this matter, coupled with the inherent difficulty of executing jack patterns for most players, have resulted in varying perspectives among community members regarding the overall challenge posed by these patterns.
 
-On the contrary, the execution of jack patterns is commonly recognized as a highly personalized skill, with lower-ranked players often demonstrating greater proficiency in these patterns compared to their higher-ranked counterparts. As a result, certain players may perceive hitting a single note at a consistent tempo as a sequence of jacks (Figure \ref{example-jacks}), while others may interpret it as individual notes (Figure \ref{example-singles}), particularly at different song speeds. This raises the question of what factors must be present in order to distinguish single notes that are the same in orientation from jack patterns in stepfiles. Conflicting opinions on this matter, coupled with the inherent difficulty of executing jack patterns for most players, have resulted in varying perspectives among community members regarding the overall challenge posed by these patterns.
+\vspace{2mm}
 
-\begin{center}
-	\begin{table}[ht]
-		\begin{minipage}{.5\linewidth}
-			\centering
-			\begin{tabular}[b]{cccc}
-				\includegraphics[width=1cm]{figures/receptor/left.png}
-				  & \includegraphics[width=1cm]{figures/receptor/down.png}  
-				  & \includegraphics[width=1cm]{figures/receptor/up.png}    
-				  & \includegraphics[width=1cm]{figures/receptor/right.png} 
-				\\
-				\includegraphics[width=1cm]{figures/004/left.png}
-				  &                                                         
-				  &                                                         
-				  &                                                         
-				\\
-				% [-20pt]
-				
-				  & 
-
-				  &                                                         
-				  &                                                         
-				\\
-				% [-20pt]
-				  &                                                         
-				  & 
-
-				  &                                                         
-				\\
-				[-20pt]
-				\includegraphics[width=1cm]{figures/016/left.png}
-				  &                                                         
-				  &                                                         
-				  & 
-
-				\\
-				% [-20pt]
-
-				  &                                                         
-				  &                                                         
-				  &                                                         
-				\\
-				% [-20pt]
-				
-				  & 
-
-				  &                                                         
-				  &                                                         
-				\\
-				[-20pt]
-				\includegraphics[width=1cm]{figures/008/left.png}
-				  &                                                         
-				  & 
-
-				  &                                                         
-				\\
-				% [-20pt]
-				  &                                                         
-				  &                                                         
-				  & 
-				                    
-			\end{tabular}%
-			
-			\medskip
-			\captionsetup{width=0.75\linewidth}
-			\captionof{figure}{Singles under sufficiently slow scroll speed in upscroll direction.}
-			\label{example-singles}
-			    
-		\end{minipage}\hfill
-		\begin{minipage}{.5\linewidth}
-			\centering
-			\begin{tabular}[b]{cccc}
-				\includegraphics[width=1cm]{figures/receptor/left.png}
-				  & \includegraphics[width=1cm]{figures/receptor/down.png}  
-				  & \includegraphics[width=1cm]{figures/receptor/up.png}    
-				  & \includegraphics[width=1cm]{figures/receptor/right.png} 
-				\\
-				
-				\includegraphics[width=1cm]{figures/004/left.png}
-				  &                                                         
-				  &                                                         
-				  &                                                         
-				\\
-				% [-27.5pt]
-				
-				  & 
-
-				  &                                                         
-				  &                                                         
-				\\
-				[-27.5pt]
-				  \includegraphics[width=1cm]{figures/016/left.png}
-                    &
-
-				  & 
-
-				  &                                                         
-				\\
-				% [-27.5pt]
-				  &                                                         
-				  &                                                         
-				  & 
-
-				\\
-				[-27.5pt]
-				\includegraphics[width=1cm]{figures/008/left.png}
-				  &                                                         
-				  &                                                         
-				  &                                                         
-				\\
-				% [-27.5pt]
-				
-				  &
-
-				  &                                                         
-				  &                                                         
-				\\
-				[-27.5pt]
-                    \includegraphics[width=1cm]{figures/016/left.png}  
-				  &                                                         
-				  &        
-
-				  &                                                         
-				\\
-				[-27.5pt]
-				  &                                                         
-				  &                                                         
-				  &       
-			\end{tabular}%
-			
-			\medskip
-			\vspace{52.5pt}
-			\captionsetup{width=0.75\linewidth}
-			\captionof{figure}{Jacks under sufficiently fast scroll speed in upscroll direction.}
-			\label{example-jacks}
-		\end{minipage}
-	\end{table}
-\end{center}
-
-
-\vspace{-7.75mm }
-
-These examples illustrate the lack of a widespread consensus on how to differentiate between meta patterns across rates, creating additional challenges when attempting to create a machine learning model for measuring stepfile difficulty. In order for such a model to be successful, these criteria must be accurately defined and widely accepted within the community. Unfortunately, the lack of agreement on this issue has impeded progress in this area and makes it unlikely that a resolution will be reached in the near future.
+The provided examples demonstrate the absence of a unified agreement on the methodology for evaluating stepfile difficulty using meta stepfile patterns, which presents added challenges in developing a machine learning framework to predict stepfile difficulty. In order for such a model to be successful, these criteria must be accurately defined and widely accepted within the community. Unfortunately, the lack of agreement on this issue has impeded progress in this area and makes it unlikely that a resolution will be reached in the near future.
 
 \vspace{2mm}
 
@@ -442,7 +555,7 @@ To address this issue, we suggest defining \textit{objective stepfile features} 
 
 \subsubsection{Raw Goods}
 
-\textit{Raw Goods} are designed to translate all imperfect judgments into a standardized score to better assess the player's performance on a given stepfile. This approach is based on FFR's implementation of raw scoring, which was adopted as an alternative to combo scoring to discourage players from being rewarded for mindlessly mashing keys while playing. The point system for raw scoring is summarized below:
+\textit{Raw Goods} are designed to translate all imperfect judgments into a standardized score to better assess the player's performance on a given stepfile. This scoring was implemented as a replacement for combo scoring, as the latter was deemed to incentivize thoughtless and repetitive key pressing during gameplay. The point system for raw scoring is summarized below:
 
 \begin{center}
 	\begin{tabular}{c@{\hskip 10mm}c}
@@ -490,15 +603,15 @@ The aforementioned raw good values are subsequently aggregated according to the 
 
 \vspace{2mm}
 
-Furthermore, the ranking system does not account for different note counts when evaluating the performance of players scoring identical raw good counts in two different stepfiles. This may result in inconsistent performance measurements across stepfiles, which could lead to unreliable assessments of an individual's skill level. Consequentially, some stepfiles are also perceived to be more difficult to single-digit good (SDG) and AAA than others, causing the definition of difficulty to become unnecessarily conflated.
+Furthermore, the existing ranking system fails to account for differences in note counts when assessing players who achieve identical raw good counts on two stepfiles with the same difficulty rating but varying stepfile lengths. As a result, shortened stepfiles are viewed as comparatively easier to attain single-digit good (SDG) and AAA ratings on, prompting players to prioritize these files in order to increase their skill rating at a relatively minimal cost. As a result, there is a potential for discrepancies in performance evaluations between stepfiles, ultimately resulting in an unreliable determination of an individual's actual level of skill.
 
 \vspace{2mm}
 
-Based on the identified limitations of using raw goods, we will identify \textit{score features} to improve accuracy in assessing the player's performance on the stepfile. This includes defining an adjusted variant of raw goods independent from note count and as previously mentioned, utilizing standard classification metrics from machine learning to measure performance based on the quantity of Misses and Boos. More details are to be covered in Section [TODO].
+Based on the identified limitations of using raw goods, we will define \textit{score features} to improve accuracy in assessing the player's performance on the stepfile. This includes defining an adjusted variant of raw goods independent from note count and as previously mentioned, utilizing standard classification metrics from machine learning to measure performance based on the quantity of Misses and Boos. More details are to be covered in Section [TODO].
 
-\subsection{ACubed: Revamped Framework for FFR's Ranking System}
+\subsection{ACubed: A Machine Learning Framework to Improve FFR's Ranking System}
 
-Following a discussion on the limitations of utilizing commonly accepted terminology within the FFR community and an overview of the deficiencies in FFR's current rating system, this paper presents ACubed, a Python module hosting a revamped ranking system designed to increase scalability, maintain accurate skill and difficulty measurement, and minimize required manual effort currently instilled in FFR's defined processes. The name ACubed has been chosen for the following reasons:
+Following a discussion on the limitations of utilizing commonly accepted terminology within the FFR community and an overview of the deficiencies in FFR's current rating system, this paper presents ACubed, a machine learning framework to continuously train and evaluate models aimed to increase skill measurement scalability, while maintaining accuracy and minimizing required manual effort currently instilled in FFR's defined processes. The name ACubed has been chosen for the following reasons:
 
 \begin{itemize}
 	\item The competitive culture within the FFR community focuses heavily on AAA ratings, making the name of this new system particularly relevant.
@@ -506,7 +619,17 @@ Following a discussion on the limitations of utilizing commonly accepted termino
 	\item ACubed is proposed as an enhancement to FFR's ranking system in spirit with RCubed being launched as a significant improvement to the game engine.
 \end{itemize}
 
-The summary of proposed changes is visually represented in the diagram shown in Figure \ref{fig1}.
+The summary of proposed changes is visually represented in the diagram shown in Figure \ref{fig1}. Particularly, the following changes are recommended:
+
+
+\begin{itemize}
+	\item The stepfile difficulty model will be isolated from player performance metrics such as skill rating and raw goods to minimize player subjectivity.
+	\item Objective stepfile features will be utilized instead of relying on patterns established by the community to promote consistent terminology.
+	\item Raw goods will be replaced with score features to more accurately track player performance.
+	\item The AAA equivalency formula will no longer involve stepfile difficulty, but instead will directly incorporate objective stepfile features.
+\end{itemize}
+
+
 \begin{center}
 	\begin{figure}[H]
 		\centering
@@ -563,15 +686,6 @@ The summary of proposed changes is visually represented in the diagram shown in 
 	\end{figure}  
 \end{center}
 
-From the diagram above, the following changes are recommended:
-
-\begin{itemize}
-	\item The stepfile difficulty model will be separated from player performance metrics such as skill rating and raw goods to minimize player subjectivity.
-	\item Objective stepfile features will be utilized instead of relying on patterns established by the community to promote consistent terminology.
-	\item Raw goods will be replaced with score features to more accurately track player performance.
-	\item The AAA equivalency formula will no longer involve stepfile difficulty, but instead will directly incorporate objective stepfile features.
-\end{itemize}
-
 Additionally, it is important to note that the Proposed State, as illustrated in Figure \ref{fig1}b, exhibits a circular interdependence between Score Features, AAA Equivalency, and Skill Rating. A well-designed system should be able to:
 
 \begin{itemize}
@@ -588,7 +702,7 @@ In Section \ref{sec:stepfile_difficulty}, we aim to establish a clear definition
 
 \vspace{2mm}
 
-Our definition of AAA equivalency is consistent with the interpretation of the community. However, in Section [TODO], we propose improvements to the current formula by defining an adjusted raw good count concerning features identified for our stepfile difficulty model. Additionally, we introduce precision and recall as performance-indicative metrics within the realm of competitive gameplay by defining the "Boo" judge accuracy label as false positives and the ``Miss" judge accuracy label as false negatives.
+Our definition of AAA equivalency is consistent with the interpretation of the community. However, in Section [TODO], we propose improvements to the current formula by defining an adjusted raw good count concerning features identified for our stepfile difficulty model. Additionally, we introduce precision and recall as performance-indicative metrics within the realm of competitive gameplay by defining the ``Boo" judge accuracy label as false positives and the ``Miss" judge accuracy label as false negatives.
 
 \vspace{2mm}
 
