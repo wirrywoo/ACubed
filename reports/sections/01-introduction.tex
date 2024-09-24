@@ -1,7 +1,7 @@
 \section{Introduction and Motivation}
 \label{sec:introduction}
 
-\href{https://www.Flash Flash Revolution.com/}{Flash Flash Revolution} (FFR) is a renowned Flash-based vertical scroll rhythm game that was originally developed by \texttt{Synthlight} in 2002. Similar to its predecessor Dance Dance Revolution (DDR), players are presented with a sequence of arrows, referred to as \textit{stepfiles}, which are meticulously calibrated and synchronized to the background music. The main objective is to maximize the raw score by pressing the corresponding keys within a precise timing window of less than one-quarter of a second, ensuring a perfect alignment between the arrows in motion and the static receptors. Following the deprecation of Adobe Flash Player in 2020, FFR is now accessible on the Windows operating system through RCubed, an open-source engine developed and actively maintained by \texttt{Velocity} \cite{20200427}.
+\href{https://www.Flash Flash Revolution.com/}{Flash Flash Revolution} (FFR) is a renowned Flash-based vertical scroll rhythm game that was originally developed by \texttt{Synthlight} in 2002. Similar to its predecessor Dance Dance Revolution (DDR), players are presented with a sequence of arrows, referred to as \textit{stepfiles}, which are meticulously calibrated and synchronized to the background music. The main objective is to maximize the raw score by pressing the corresponding keys within a precise timing window of less than one-quarter of a second, ensuring a perfect alignment between the arrows in motion and the static receptors. Following the deprecation of Adobe Flash Player in 2020, FFR is now accessible on the Windows operating system through \href{https://www.flashflashrevolution.com/ffr/r3-goes-open-source/}{RCubed}, an open-source engine developed and actively maintained by \texttt{Velocity}.
 
 \vspace{2mm}
 
@@ -9,11 +9,11 @@ The player base of FFR maintains a consistently robust presence, with several th
 
 \vspace{2mm}
 
-Before delving into these areas of discussion, it is important to acknowledge that there will be many assumptions present throughout this analysis. We will provide sufficient justification for any assumptions made, and it is important to note that the proposed solutions in this paper are not absolute and definitive. If there is any disagreement with any identified assumptions, it is encouraged for individuals to develop an alternative modeling approach based on their preferred assumptions. Moreover, it is important to mention that all figures provided in this report have been displayed under the downscroll setting to indicate that the arrows are assumed to be moving from the top to the bottom of the screen.
+While it is imperative to consider varying perspectives, it is essential to acknowledge that this analysis incorporates a set of underlying assumptions. Justification for each assumption will be provided, but it is worth noting that the proposed solutions in this paper are not definitive and absolute. As evidenced by \href{https://www.flashflashrevolution.com/vbz/showthread.php?t=153119}{past debates}, alternative approaches based on differing assumptions are welcomed and encouraged. Additionally, unless specified otherwise, it should be noted that all figures presented in this paper are set to the downscroll setting, indicating that the arrows are presumed to move from the top of the screen to the bottom.
 
 \subsection{Overview of FFR's Skill-Based Metrics and Their Shortcomings}
 \subsubsection{Stepfile Difficulty}
-Every stepfile possesses intrinsic levels of challenge concerning the player's execution due to their distinct structural characteristics. However, quantifying this measure continues to be a challenging question. In the initial stages of its development, stepfile difficulty was measured on an integer scale ranging from \texttt{1} to \texttt{12}, with \texttt{1} denoting the easiest and \texttt{12} denoting the most challenging levels in the game. In an effort to improve the representativeness of difficulty in light of a growing number of stepfiles, \texttt{nois-or-e}, \texttt{One Winged Angel}, and \texttt{stavie33} revamped the difficulty scale to encompass a broader range from \texttt{1} to \texttt{120}. This update was announced on the forums \cite{20120608} and has since been adopted as the current difficulty scale in use.
+Every stepfile possesses intrinsic levels of challenge concerning the player's execution due to their distinct structural characteristics. However, quantifying this measure continues to be a challenging question. In the initial stages of its development, stepfile difficulty was measured on an integer scale ranging from \texttt{1} to \texttt{12}, with \texttt{1} denoting the easiest and \texttt{12} denoting the most challenging levels in the game. In an effort to improve the representativeness of difficulty in light of a growing number of stepfiles, \texttt{nois-or-e}, \texttt{One Winged Angel}, and \texttt{stavie33} revamped the difficulty scale to encompass a broader range from \texttt{1} to \texttt{120}. This update was \href{https://www.flashflashrevolution.com/vbz/showthread.php?t=124260}{announced on the forums} and has since been adopted as the current difficulty scale in use.
 
 \vspace{2mm}
 
@@ -26,7 +26,7 @@ To assess the difficulty of new incoming stepfiles in the engine, a team of diff
 	      predict difficulty at any rate not equal to \texttt{1.0x}, which has recently gained popularity for competitive play within the community.
 \end{itemize}
 
-Additionally, this current method of determining the difficulty of stepfiles is a manually daunting task, prompting many developers to seek algorithmic methods to measure stepfile difficulty automatically. With the growing advancements in machine learning and artificial intelligence, these methods have become increasingly popular for creating stepfile difficulty models. Recently in 2023, \texttt{Trumpet63} successfully developed an API wrapper incorporating a trained GRU model with a mean-squared error of 11 \cite{20230216}, to help estimate the difficulty of new stepfiles in the \href{https://www.flashflashrevolution.com/~velocity/ffrjs/difficulty/}{Difficulty Estimator page}.
+Additionally, this current method of determining the difficulty of stepfiles is a manually daunting task, prompting many developers to seek algorithmic methods to measure stepfile difficulty automatically. With the growing advancements in machine learning and artificial intelligence, these methods have become increasingly popular for creating stepfile difficulty models. Recently in 2023, \texttt{Trumpet63} successfully developed an API wrapper incorporating a \href{https://www.flashflashrevolution.com/vbz/showthread.php?t=154255}{trained GRU model} with a mean-squared error of 11, to help estimate the difficulty of new stepfiles in the \href{https://www.flashflashrevolution.com/~velocity/ffrjs/difficulty/}{Difficulty Estimator page}.
 
 \vspace{2mm}
 
@@ -42,7 +42,7 @@ Given the progress made in measuring stepfile difficulty and its widespread use 
 
 \subsubsection{AAA Equivalency}
 
-The \textit{AAA equivalency} was developed to determine the level of difficulty at which a player's performance on a specific stepfile can result in the highest attainable score (AAA). Particularly, this rating is determined by equating the player's performance on a stepfile under a given difficulty level to their potential ability to score a AAA on a stepfile under a different difficulty rating. The initial formula defining this metric was proposed by \texttt{Trumpet63} after conducting a graphical analysis of player performance during the 10\textsuperscript{th} Official FFR Tournament \cite{20140930}. However, as official tournaments have continued, the formula has been continuously updated and refined based on new data. These adjustments have resulted in the current version of the formula \cite{20150216}, which is outlined below.
+The \textit{AAA equivalency} was developed to determine the level of difficulty at which a player's performance on a specific stepfile can result in the highest attainable score (AAA). Particularly, this rating is determined by equating the player's performance on a stepfile under a given difficulty level to their potential ability to score a AAA on a stepfile under a different difficulty rating. The initial formula defining this metric was proposed by \texttt{Trumpet63} after conducting a \href{https://www.flashflashrevolution.com/vbz/showthread.php?p=4209451}{graphical analysis of player performance} during the 10\textsuperscript{th} Official FFR Tournament. However, as official tournaments have continued, the formula has been continuously updated and refined based on new data. These adjustments have resulted in the \href{https://www.flashflashrevolution.com/ffr/new-skill-based-ranking-system-leaderboards/}{current version of the formula}, which is outlined below.
 \begin{align*}
 	AAA_{eq} & = (D + \alpha) \left( \frac{\delta - NGC \cdot \lambda}{\delta}\right)^{1 / \beta} - \alpha  \\
 	\\
@@ -82,7 +82,7 @@ Several solutions have been proposed on Discord to address the issues identified
 
 \subsubsection{Skill Rating}
 
-The \textit{Skill Rating} metric, which is determined by analyzing players' top-performing scores across their entire play record, serves as the primary basis for ranking players in FFR. Introduced by \texttt{Trumpet63}, \texttt{PrawnSkunk}, and \texttt{Silvuh}, this ranking metric is initially defined by computing an exponentially weighted average of a player's top $N$ scores \cite{20150216}. Particularly, the weighting mechanism that was rolled out in its initial release defines the weights $w := w(k, r)$ using the following formula for all ranks $r$ satisfying $r \in \{1, 2, \cdots, N\}$:
+The \textit{Skill Rating} metric, which is determined by analyzing players' top-performing scores across their entire play record, serves as the primary basis for ranking players in FFR. Introduced by \texttt{Trumpet63}, \texttt{PrawnSkunk}, and \texttt{Silvuh}, this \href{https://www.flashflashrevolution.com/ffr/new-skill-based-ranking-system-leaderboards/}{ranking metric is initially defined} by computing an exponentially weighted average of a player's top $N$ scores. Particularly, the weighting mechanism that was rolled out in its initial release defines the weights $w := w(k, r)$ using the following formula for all ranks $r$ satisfying $r \in \{1, 2, \cdots, N\}$:
 \begin{align*}
 	w & = \frac{e^{k(r-1)} - e^{Nk}}{\displaystyle \sum_{j = 1}^{N} \left(e^{k(j-1)} - e^{Nk}\right)}
 \end{align*}
@@ -107,7 +107,7 @@ In other words, under this weighting, over 75\% of a player's skill rating is de
 
 \vspace{2mm}
 
-To address some of these challenges, a new approach called Seasonal Skill Rating was implemented in conjunction with the established Skill Rating model in 2021 \cite{20211001}. This system was specifically designed to monitor player performance in three-month intervals each year, providing more current data for use in determining official tournament placements. Developed by \texttt{Prawkskunk}, \texttt{XJ-9}, and \texttt{WirryWoo}, the weighting mechanism used in Seasonal Skill Rating calculates a linearly weighted average of a player's top $N$ scores using the formula provided below. For all ranks $r$ satisfying $r \in \{1, 2, \cdots, N\}$, the weight $w := w(r)$ is computed as follows:
+To address some of these challenges, a new approach called \href{https://www.flashflashrevolution.com/ffr/season-1/}{Seasonal Skill Rating} was implemented in conjunction with the established Skill Rating model in 2021. This system was specifically designed to monitor player performance in three-month intervals each year, providing more current data for use in determining official tournament placements. Developed by \texttt{Prawkskunk}, \texttt{XJ-9}, and \texttt{WirryWoo}, the weighting mechanism used in Seasonal Skill Rating calculates a linearly weighted average of a player's top $N$ scores using the formula provided below. For all ranks $r$ satisfying $r \in \{1, 2, \cdots, N\}$, the weight $w := w(r)$ is computed as follows:
 
 \begin{align*}
 	w & = \frac{N - r + 1}{\frac{1}{2}N (N + 1)} 
@@ -587,6 +587,10 @@ During gameplay, players observe similar patterns within numerous stepfiles and 
     {\includegraphics[width=1cm]{figures/012/up.png}};
 \node[inner sep=0pt] (up) at (3,1.2+2/3)
     {\includegraphics[width=1cm]{figures/012/right.png}};
+\node[inner sep=0pt] (up) at (3,1.2+5/3)
+    {\includegraphics[width=1cm]{figures/024/right.png}};
+\node[inner sep=0pt] (up) at (2,1.2+1/3)
+    {\includegraphics[width=1cm]{figures/024/up.png}};
 \node[inner sep=0pt] (right) at (1,1.7)
     {\includegraphics[width=1cm]{figures/016/down.png}};
 \node[inner sep=0pt] (up) at (0,1.2)

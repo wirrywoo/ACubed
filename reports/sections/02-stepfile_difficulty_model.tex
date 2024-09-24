@@ -5,9 +5,61 @@ Stepfile difficulty has been a recurring topic of debate within the FFR communit
 
 \subsection{Playing Objective Categorizations}
 
-\textit{Playing objectives} are goals players set to optimize in their gameplay. These playing objectives can be categorized into two main groups: constant weighted and variable weighted. This section focuses on providing numerous examples of both types of playing objectives, discussing their integration into our analysis, and establishing a default playing objective to be utilized in this report. It is imperative to acknowledge that, at present, ACubed currently supports only stepfile difficulty measurements under discretized constant weighted playing objectives. Future developments of ACubed are anticipated to broaden its support to include other playing objectives.
+\textit{Playing objectives} are goals players set to optimize in their gameplay. These playing objectives can be categorized into two main groups: constant weighted and variable weighted. This section focuses on providing numerous examples of both types of playing objectives, discussing their integration into our analysis, and establishing a default playing objective to be utilized in this report. It is imperative to acknowledge that, at present, ACubed currently supports only stepfile difficulty measurements under discretized constant weighted playing objectives. In upcoming releases, ACubed is expected to expand its capabilities to encompass additional playing objectives as we deliberate on methods to implement this in our framework.
 
 \subsubsection{Constant-Weighted Playing Objectives}
+
+A fundamental aspect of \textit{constant-weighted} playing objectives is the assumption that the reward for successfully hitting a note remains consistent at the note-level. Namely, each attempt at hitting a note in the stepfile receives a consistently defined reward value between $0$ and $1$, which reflects the player's incentive to successfully hit the note at some timestamp relative to the exact timing requirements for a given note. The following are examples of commonly used playing objectives falling within this category.
+
+\begin{itemize}
+    \item The Full-Combo (FC) score incentivizes players to hit all notes without missing any. The reward function to FC a stepfile is:
+
+    $$r(t) = \begin{cases} 
+          1 & -117 \leq t \leq 118 \\
+          0 & \text{otherwise}
+       \end{cases}$$
+
+    \item To achieve a Clean Full-Combo score, players must hit all notes without any average hits or boo hits in addition to achieving an FC on the stepfile. The reward function to Clean FC a stepfile is:
+
+    $$r(t) = \begin{cases} 
+          1 & -83 \leq t \leq 118 \\
+          0 & \text{otherwise}
+       \end{cases}$$
+
+    \item In order to maximize the score under FFR's Judge Windows, players should aim to optimize the raw score of a stepfile using the specified weights discussed in the previous section. The reward function to maximize raw score under FFR scoring is:
+
+    $$r(t) = \begin{cases} 
+          0.1 & -117 \leq t < -83 \\
+          0.5 & -83 \leq t < -50 \\
+          1 & -50 \leq t \leq 50 \\
+          0.5 & 50 < t \leq 118 \\
+          0 & \text{otherwise}
+       \end{cases}$$
+
+    \item Maximizing the score under MS Timing is not specific to FFR, but it involves optimizing the raw score of a stepfile where the assigned rewards favor hits that are closest to Perfect. This method of scoring is implemented in other rhythm games, such as Etterna. The reward function to maximize raw score under MS timing is:
+
+    $$r(t) = \begin{cases} 
+          1- \frac{t}{118} & 0 \leq t \leq 118 \\
+          1 + \frac{t}{117} & -117 \leq t \leq 0 \\
+          0 & \text{otherwise}
+       \end{cases}$$
+
+    \item Scoring a AAA on a stepfile requires players to hit all notes within FFR's Perfect timing window. AAA is the maximum score a player can obtain on any stepfile in FFR. The reward function to score a AAA on a stepfile is:
+
+    $$r(t) = \begin{cases} 
+          1 & -50 \leq t \leq 50 \\
+          0 & \text{otherwise}
+       \end{cases}$$
+
+    \item Scoring a AAAA on a stepfile requires players to hit all notes within FFR's Marvelous timing window. Despite AAAA's being significantly more difficult to obtain, these scores are treated as AAA for ranking purposes. The reward function to score a AAAA on a stepfile is:
+
+    $$r(t) = \begin{cases} 
+          1 & -17 \leq t \leq 17 \\
+          0 & \text{otherwise}
+       \end{cases}$$
+\end{itemize}
+
+Figure \ref{fig:playing_objectives} visually presents the various playing objectives, with the green colors denoting the reward given when a player successfully hits the correct note within the predetermined judge window.  
 
 \begin{figure}[H]
 \centering
@@ -24,11 +76,11 @@ Stepfile difficulty has been a recurring topic of debate within the FFR communit
     {\includegraphics[width=1cm]{figures/receptor/up.png}};
 \node[inner sep=0pt] (right) at (3,0)
     {\includegraphics[width=1cm]{figures/receptor/right.png}};
-\node[inner sep=0pt] at (-1,-1)[label=left:{\footnotesize\texttt{-117ms}}]{};
+\node[inner sep=0pt] at (-1,-1)[label=left:{\footnotesize\texttt{118ms}}]{};
 \draw[opacity=0.5,dashed] (-1, -1) -- (4, -1); 
 \node[inner sep=0pt] at (-1,0) [label=left:{\footnotesize \texttt{0ms}}]{};
 \draw[opacity=0.5,dashed] (-1, 0) -- (4, 0); 
-\node[inner sep=0pt] at (-1,1) [label=left:{\footnotesize \texttt{118ms}}]{};
+\node[inner sep=0pt] at (-1,1) [label=left:{\footnotesize \texttt{-117ms}}]{};
 \draw[opacity=0.5,dashed] (-1, 1) -- (4, 1);
 \node[inner sep=0pt] at (1.5, -1.5) [label=center:{\footnotesize \textit{(a)} Full-Combo (FC)}]{};
     \end{scope}
@@ -44,11 +96,11 @@ Stepfile difficulty has been a recurring topic of debate within the FFR communit
     {\includegraphics[width=1cm]{figures/receptor/up.png}};
 \node[inner sep=0pt] (right) at (3,0)
     {\includegraphics[width=1cm]{figures/receptor/right.png}};
-\node[inner sep=0pt] at (-1,-1)[label=left:{\footnotesize\texttt{-117ms}}]{};
+\node[inner sep=0pt] at (-1,-1)[label=left:{\footnotesize\texttt{118ms}}]{};
 \draw[opacity=0.5,dashed] (-1, -1) -- (4, -1); 
 \node[inner sep=0pt] at (-1,0) [label=left:{\footnotesize \texttt{0ms}}]{};
 \draw[opacity=0.5,dashed] (-1, 0) -- (4, 0); 
-\node[inner sep=0pt] at (-1,1) [label=left:{\footnotesize \texttt{118ms}}]{};
+\node[inner sep=0pt] at (-1,1) [label=left:{\footnotesize \texttt{-117ms}}]{};
 \draw[opacity=0.5,dashed] (-1, 1) -- (4, 1);
 \node[inner sep=0pt] at (1.5, -1.5) [label=center:{\footnotesize \textit{(b)} Clean Full-Combo (FC)}]{};
     \end{scope}
@@ -67,11 +119,11 @@ Stepfile difficulty has been a recurring topic of debate within the FFR communit
     {\includegraphics[width=1cm]{figures/receptor/up.png}};
 \node[inner sep=0pt] (right) at (3,0)
     {\includegraphics[width=1cm]{figures/receptor/right.png}};
-\node[inner sep=0pt] at (-1,-1)[label=left:{\footnotesize\texttt{-117ms}}]{};
+\node[inner sep=0pt] at (-1,-1)[label=left:{\footnotesize\texttt{118ms}}]{};
 \draw[opacity=0.5,dashed] (-1, -1) -- (4, -1); 
 \node[inner sep=0pt] at (-1,0) [label=left:{\footnotesize \texttt{0ms}}]{};
 \draw[opacity=0.5,dashed] (-1, 0) -- (4, 0); 
-\node[inner sep=0pt] at (-1,1) [label=left:{\footnotesize \texttt{118ms}}]{};
+\node[inner sep=0pt] at (-1,1) [label=left:{\footnotesize \texttt{-117ms}}]{};
 \draw[opacity=0.5,dashed] (-1, 1) -- (4, 1);
 \node[inner sep=0pt] at (1.5, -1.5) [label=center:{\footnotesize \textit{(c)} Maximize Score under FFR Scoring (Default)}]{};
     \end{scope}
@@ -87,11 +139,11 @@ Stepfile difficulty has been a recurring topic of debate within the FFR communit
     {\includegraphics[width=1cm]{figures/receptor/up.png}};
 \node[inner sep=0pt] (right) at (3,0)
     {\includegraphics[width=1cm]{figures/receptor/right.png}};
-\node[inner sep=0pt] at (-1,-1)[label=left:{\footnotesize\texttt{-117ms}}]{};
+\node[inner sep=0pt] at (-1,-1)[label=left:{\footnotesize\texttt{118ms}}]{};
 \draw[opacity=0.5,dashed] (-1, -1) -- (4, -1); 
 \node[inner sep=0pt] at (-1,0) [label=left:{\footnotesize\texttt{0ms}}]{};
 \draw[opacity=0.5,dashed] (-1, 0) -- (4, 0); 
-\node[inner sep=0pt] at (-1,1) [label=left:{\footnotesize\texttt{118ms}}]{};
+\node[inner sep=0pt] at (-1,1) [label=left:{\footnotesize\texttt{-117ms}}]{};
 \draw[opacity=0.5,dashed] (-1, 1) -- (4, 1);
 \node[inner sep=0pt] at (1.5, -1.5) [label=center:{\footnotesize \textit{(d)} Maximize Score under MS-based Timings}]{};
     \end{scope}
@@ -106,11 +158,11 @@ Stepfile difficulty has been a recurring topic of debate within the FFR communit
     {\includegraphics[width=1cm]{figures/receptor/up.png}};
 \node[inner sep=0pt] (right) at (3,0)
     {\includegraphics[width=1cm]{figures/receptor/right.png}};
-\node[inner sep=0pt] at (-1,-1)[label=left:{\footnotesize\texttt{-117ms}}]{};
+\node[inner sep=0pt] at (-1,-1)[label=left:{\footnotesize\texttt{118ms}}]{};
 \draw[opacity=0.5,dashed] (-1, -1) -- (4, -1); 
 \node[inner sep=0pt] at (-1,0) [label=left:{\footnotesize \texttt{0ms}}]{};
 \draw[opacity=0.5,dashed] (-1, 0) -- (4, 0); 
-\node[inner sep=0pt] at (-1,1) [label=left:{\footnotesize \texttt{118ms}}]{};
+\node[inner sep=0pt] at (-1,1) [label=left:{\footnotesize \texttt{-117ms}}]{};
 \draw[opacity=0.5,dashed] (-1, 1) -- (4, 1);
 \node[inner sep=0pt] at (1.5, -1.5) [label=center:{\footnotesize \textit{(e)} All Perfects (AAA)}]{};
     \end{scope}
@@ -125,22 +177,106 @@ Stepfile difficulty has been a recurring topic of debate within the FFR communit
     {\includegraphics[width=1cm]{figures/receptor/up.png}};
 \node[inner sep=0pt] (right) at (3,0)
     {\includegraphics[width=1cm]{figures/receptor/right.png}};
-\node[inner sep=0pt] at (-1,-1)[label=left:{\footnotesize\texttt{-117ms}}]{};
+\node[inner sep=0pt] at (-1,-1)[label=left:{\footnotesize\texttt{118ms}}]{};
 \draw[opacity=0.5,dashed] (-1, -1) -- (4, -1); 
 \node[inner sep=0pt] at (-1,0) [label=left:{\footnotesize \texttt{0ms}}]{};
 \draw[opacity=0.5,dashed] (-1, 0) -- (4, 0); 
-\node[inner sep=0pt] at (-1,1) [label=left:{\footnotesize \texttt{118ms}}]{};
+\node[inner sep=0pt] at (-1,1) [label=left:{\footnotesize \texttt{-117ms}}]{};
 \draw[opacity=0.5,dashed] (-1, 1) -- (4, 1);
 \node[inner sep=0pt] at (1.5, -1.5) [label=center:{\footnotesize \textit{(f)} All Marvelous (AAAA)}]{};
     \end{scope}
 
 \end{tikzpicture}
 
-\caption{Constant-Weighted Playing Objectives to define Stepfile Difficulty.} \label{fig:M1}
+\caption{Constant-Weighted Playing Objectives to define Stepfile Difficulty.} \label{fig:playing_objectives}
 \end{figure}
 
+It is worth mentioning that since the manually assigned difficulty ratings are determined under the goal of achieving the highest possible raw score with FFR judgement windows, our definition of the stepfile difficulty model will be aligned with this particular playing objective. Additional manual data collection is necessary to develop a stepfile difficulty model that can support other playing objectives identified in this report.
+
+\vspace{2mm}
+
+To allow for meaningful comparisons, each playing objective can be represented by an equivalent judge window size $J$. This can be determined by evaluating the following integral:
+
+$$J = \displaystyle \int_{-\infty}^{\infty} r(t) dt$$
+
+For example, for score maximizing playing objectives under FFR Judge Windows, we have:
+\begin{align*}
+J &= \displaystyle \int_{-\infty}^{\infty} r(t) dt \\
+& = 0.1 \cdot (-83 - (-117)) + 0.5 \cdot (-50 - (-83)) + 1 \cdot (50 - (-50)) + 0.5 \cdot (118 - 50) \\
+&= 3.4 + 16.5 + 100 + 34 = 153.9
+\end{align*}
+
+and for score maximizing playing objectives under MS Timing, we have:
+\begin{align*}
+J &= \displaystyle \int_{-\infty}^{\infty} r(t) dt \\
+& = \int_{0}^{118} \left(1 - \frac{t}{118}\right) dt + \int_{-117}^{0} \left(1 + \frac{t}{117}\right) dt \\
+&= \left. \left( t - \frac{t^2}{236} \right)\right|_{t = 118} - \left.\left( t + \frac{t^2}{234} \right) \right|_{t = - 117} \\
+&= 59 + 58.5 = 117.5
+\end{align*}
+
+Moreover, with the assumption that the weight values for Etterna's Perfect, Great, and Good ratings are $1$, $0.5$, and $0.1$ respectively, \href{https://docs.google.com/spreadsheets/d/1syi5aN6sTiDA2Bs_lzZjsLQ1yCEhxl5EnAd6EsD6cF4/edit?gid=0#gid=0}{Etterna Judgement Data} was incorporated into the analysis for comparison. Through similar calculations, it was determined that the corresponding equivalent judge window sizes for each identified playing objective are as follows:
+
+\begin{center}
+	\begin{tabular}{c@{\hskip 5mm}c}
+		\hspace{5mm} \textbf{Playing Objective} \hspace{5mm} & \textbf{Equivalent Window Size} $J$ \\
+            \hline
+		Full-Combo in FFR                              & 235                        \\
+            Maximize Score in Etterna Under J1 & 216\\
+		Clean Full-Combo in FFR                                 & 201                         \\
+            Maximize Score in Etterna Under J2 & 191.52\\
+            Maximize Score in Etterna Under J3 & 167.04\\
+		Maximize Score in FFR assuming default scoring                              & 153.9                       \\
+            Maximize Score in Etterna Under J4 & 144\\
+            Maximize Score in Etterna Under J5 & 120.96\\
+		Maximize Score in FFR assuming MS-weighted scoring                                  & 117.5                       \\
+  
+		Scoring AAA in FFR                                   & 100                    \\
+            Maximize Score in Etterna Under J6 & 95.04\\
+            Maximize Score in Etterna Under J7 & 72\\
+            Maximize Score in Etterna Under J8 & 47.52\\
+		Scoring AAAA in FFR                                   & 34                       \\
+            Maximize Score in Etterna Under J9 & 28.8\\
+	\end{tabular}
+\end{center}
+
+The execution of the playing objective is more challenging when $J$ values are lower, as indicated by a smaller judge window which allows for a narrower margin of error. This examination corroborates the general perception within the community that the FFR's scoring system falls between Etterna's J3 and J4 scoring, with the latter being known as Etterna's default judgement setting. 
+
+\vspace{2mm}
+
+These computed judge windows will be utilized in this report to enhance the definition of objective features that are employed in the stepfile difficulty model.
 
 \subsubsection{Variable-Weighted Playing Objectives}
+
+The concept of variable-weighted playing objectives posits that the reward for successfully hitting a note is dependent on the individual note. This means that the reward value, which similarly ranges from 0 to 1, does not necessarily require a perfect hit for every note to fulfill the playing objective. The following playing objectives are categorized as variable-weighted:
+
+\begin{itemize}
+    \item The utilization of atypical playing tactics for the purpose of generating non-conventional scores is a fundamental aspect of the Anti-PA scoring methodology. This strategic approach is typically employed by players in order to unlock \href{https://www.flashflashrevolution.com/tokens/skill_token_info.php}{skill tokens in FFR}.
+
+    \item In order to obtain a Single-Digit Good (SDG) score, players must achieve a score of less than ten raw goods on a stepfile. SDG is commonly recognized by players as a crucial milestone in their pursuit of achieving a AAA score on that particular stepfile.
+\end{itemize}
+
+It is worth noting that the aforementioned examples can be generalized as scoring-based objectives, in which the player's aim is to reach a predetermined score. The consequential implication of achieving these scores, particularly with high miss and boo counts, is the ability to manage the life bar when gameplay is in session. Shown on the right of Figure \ref{fig:gameplay}, the life bar represents a player's remaining life during gameplay. Each successful hit on an arrow contributes to increasing the bar, whereas receiving a Miss or Boo judgement will result in a decrease. Allowing the bar to deplete entirely will result in the conclusion of the game.
+
+\begin{center}
+\includegraphics[width=12cm]{reports/figures/images/gameplay.png}
+\captionof{figure}{Screenshot of FFR's Gameplay View (upscroll view)}
+\label{fig:gameplay}
+\end{center}
+
+This is the primary factor responsible for the difficulty of accomplishing these scoring-based objectives. Particularly, because Boos are generated at a higher rate compared to other judgements, excessive generation of Boos runs the risk of causing the player to fail the level. Conversely, getting too many hits (e.g. Perfects, Goods, and Averages) can result in missed chances to acquire sufficient Misses and Boos needed to attain the desired score.
+
+\vspace{2mm}
+
+The life bar can be described as a one-dimensional random walk with a reflective barrier at position $10$ and an absorbing barrier at position $-10$. All possible states of the life bar can be defined by the particle's position. Starting from the origin, positive movements of the particle represent successful hits, regardless of the judgement received, while negative movements represent either hitting a non-existent note (Boo) or missing an existing note (Miss). Using the random walk analogy, we begin by proposing the following conjecture:
+
+\begin{conjecture}
+Let $f(n)$ represent the number of ways a player can fail passing a stepfile with at most $n$ microdecisions, where microdecisions are either categorized as ``hits" (i.e. Perfects, Goods, Averages) or ``no-hits" (i.e. Miss, Boos). Then,
+
+$$f(n) \sim \binom{n}{\lfloor\frac{n-10}{2}\rfloor}$$
+\end{conjecture}
+
+Note that Misses and Boos are treated as independent ``no-hits" while Perfects, Goods, and Averages are interpreted as one ``hit". 
+
 
 
 \subsection{Machine Learning Problem Formulation}
@@ -207,7 +343,8 @@ Let $\hat{f}$ be an estimate of $f$ that yields prediction $\hat{Y} = \hat{f}(X_
     & = [f(X_{\text{obj}}) - \hat{f}(X_{\text{obj}})]^2 + \text{Var}(\epsilon)
 \end{align*}
 
-The main objective of our research is to accurately calculate the function $f$, while also minimizing the reducible error $[f(X_{\text{obj}}) - \hat{f}(X_{\text{obj}})]^2$. It is important to acknowledge that the features selected in this study will comply with inferential properties related to stepfile difficulty, as further explained in a subsequent section. 
+The main objective of our research is to accurately calculate the function $f$, while also minimizing the reducible error $[f(X_{\text{obj}}) - \hat{f}(X_{\text{obj}})]^2$. It is important to acknowledge that the features selected in this study will comply with inferential properties related to stepfile difficulty, as further explained in a subsequent section.
+
 \vspace{2mm}
 
 
@@ -217,18 +354,6 @@ The main objective of our research is to accurately calculate the function $f$, 
 
 \textbf{Plan:}
 \begin{itemize}
-	% \item Untangle objective definitions of difficulty from its inherent subjectivity. Identify that the goal of creating this machine learning model is to maximize the objective representation of difficulty in the overall model.
-	      	      
-	\item Clarify the definition of difficulty by introducing judge window sizes. Also dissociate processing difficulty from execution difficulty and focus paper on execution. Add visuals:
-	      \begin{itemize}
-	      	\item Difficulty to FC: 235 ms
-	      	\item Difficulty to Clean FC: 201 ms
-	      	\item Difficulty to Maximize Score: 153.9 ms
-	      	\item Difficulty to Maximize Score under MS based scoring: 117.5 ms
-	      	\item Difficulty to AAA: 100 ms
-	      	\item Difficulty to AAAA: 34 ms
-	      \end{itemize}
-	\item Address concerns about inaccurate difficulty measurements current in game and the non-existing idea of "true" difficulty using crowdsourcing papers \href{https://crowdsourcing-class.org/readings/downloads/quality-control/Quality-Management-on-Amazon-Mechanical-Turk.pdf#page4}{here} and \href{https://crowdsourcing-class.org/readings/downloads/ml/EM.pdf}{here}.
 	      	      
 	      \item{Introduce Contested Difficulty Sheet and define train-test split using KDE estimations of proposed difficulties}
 	      	      
