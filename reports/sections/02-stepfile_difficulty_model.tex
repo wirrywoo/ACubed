@@ -247,7 +247,7 @@ These computed judge windows will be utilized in this report to enhance the defi
 
 \subsubsection{Variable-Weighted Playing Objectives}
 
-The concept of variable-weighted playing objectives posits that the reward for successfully hitting a note is dependent on the individual note. This means that the reward value, which similarly ranges from 0 to 1, does not necessarily require a perfect hit for every note to fulfill the playing objective. The following playing objectives are categorized as variable-weighted:
+The concept of variable-weighted playing objectives posits that the reward attributed to each note can vary depending on the player's previous actions. This means that the reward value, which similarly ranges from 0 to 1, does not necessarily require a perfect hit for every note to fulfill the playing objective. The following playing objectives are categorized as variable-weighted:
 
 \begin{itemize}
     \item The utilization of atypical playing tactics for the purpose of generating non-conventional scores is a fundamental aspect of the Anti-PA scoring methodology. This strategic approach is typically employed by players in order to unlock \href{https://www.flashflashrevolution.com/tokens/skill_token_info.php}{skill tokens in FFR}.
@@ -255,28 +255,63 @@ The concept of variable-weighted playing objectives posits that the reward for s
     \item In order to obtain a Single-Digit Good (SDG) score, players must achieve a score of less than ten raw goods on a stepfile. SDG is commonly recognized by players as a crucial milestone in their pursuit of achieving a AAA score on that particular stepfile.
 \end{itemize}
 
-It is worth noting that the aforementioned examples can be generalized as scoring-based objectives, in which the player's aim is to reach a predetermined score. The consequential implication of achieving these scores, particularly with high miss and boo counts, is the ability to manage the life bar when gameplay is in session. Shown on the right of Figure \ref{fig:gameplay}, the life bar represents a player's remaining life during gameplay. Each successful hit on an arrow contributes to increasing the bar, whereas receiving a Miss or Boo judgement will result in a decrease. Allowing the bar to deplete entirely will result in the conclusion of the game.
+
+
+It is worth noting that the aforementioned examples can be generalized as scoring-based objectives, in which the player's aim is to reach a predetermined score. However, depending on the miss and boo requirements of the targeted score, the player must additionally manage the life bar when gameplay is in session. Shown on the right of Figure \ref{fig:gameplay}, the life bar represents a player's remaining life during gameplay. Each successful hit on an arrow contributes to increasing the bar, whereas receiving a Miss or Boo judgement will result in a decrease. Allowing the bar to deplete entirely will result in the conclusion of the game.
 
 \begin{center}
-\includegraphics[width=12cm]{reports/figures/images/gameplay.png}
+\includegraphics[width=15cm]{reports/figures/images/gameplay.png}
 \captionof{figure}{Screenshot of FFR's Gameplay View (upscroll view)}
 \label{fig:gameplay}
 \end{center}
 
-This is the primary factor responsible for the difficulty of accomplishing these scoring-based objectives. Particularly, because Boos are generated at a higher rate compared to other judgements, excessive generation of Boos runs the risk of causing the player to fail the level. Conversely, getting too many hits (e.g. Perfects, Goods, and Averages) can result in missed chances to acquire sufficient Misses and Boos needed to attain the desired score.
+The implementation of the life bar introduces two potential scenarios that require further investigation: situations in which the difficulty of executing these playing objectives remains independent of the life bar, and cases in which it becomes dependent on it.
 
 \vspace{2mm}
 
-The life bar can be described as a one-dimensional random walk with a reflective barrier at position $10$ and an absorbing barrier at position $-10$. All possible states of the life bar can be defined by the particle's position. Starting from the origin, positive movements of the particle represent successful hits, regardless of the judgement received, while negative movements represent either hitting a non-existent note (Boo) or missing an existing note (Miss). Using the random walk analogy, we begin by proposing the following conjecture:
+\textit{Case One:} \textbf{Life Bar Independent}
+
+\vspace{2mm}
+
+\textit{Case Two:} \textbf{Life Bar Dependent}
+
+\vspace{2mm}
+In this case, the life bar is the primary factor responsible for the difficulty of accomplishing these scoring-based objectives. Particularly, because Boos are generated at a higher rate compared to other judgements, excessive generation of Boos runs the risk of causing the player to fail the level. Conversely, getting too many hits (e.g. Perfects, Goods, and Averages) can result in missed chances to acquire sufficient Misses and Boos needed to attain the desired score.
+
+\vspace{2mm}
+
+The life bar can be redefined as a one-dimensional random walk with a reflective barrier at position $20$ and an absorbing barrier at position $0$. All possible states of the life bar can be defined by the particle's position. Starting from position $10$, positive movements of the particle represent successful hits, regardless of the judgement received, while negative movements represent either hitting a non-existent note (Boo) or missing an existing note (Miss). Using the random walk analogy, we begin by proposing the following conjecture:
 
 \begin{conjecture}
-Let $f(n)$ represent the number of ways a player can fail passing a stepfile with at most $n$ microdecisions, where microdecisions are either categorized as ``hits" (i.e. Perfects, Goods, Averages) or ``no-hits" (i.e. Miss, Boos). Then,
+Let $g(n)$ represent the number of ways a player can fail passing a stepfile with at most $n$ actions, where actions are either categorized as ``hits" (i.e. Perfects, Goods, Averages) or ``no-hits" (i.e. Miss, Boos). Then,
 
-$$f(n) \sim \binom{n}{\lfloor\frac{n-10}{2}\rfloor}$$
+$$g(n) \sim \binom{n}{\lfloor\frac{n-10}{2}\rfloor}$$
 \end{conjecture}
 
 Note that Misses and Boos are treated as independent ``no-hits" while Perfects, Goods, and Averages are interpreted as one ``hit". 
 
+\vspace{2mm}
+
+    Define $f(n, k)$ to represent the number of possible combinations of $n$ actions that result in a total of $k$ health during gameplay. When no actions have been executed ($n = 0$), there exists only one possible scenario in which a total of $k = 10$ health is obtained, while all other possible outcomes for $k$ will be $0$, considering that every player begins with $10$ health. Therefore, 
+    $$f(0, k) = \begin{cases} 
+          1 & k = 10 \\
+          0 & \text{otherwise}
+       \end{cases}$$
+    
+    In the case where $k > 0$ and the barriers are not present, achieving a health level of $k$ after $n$ actions would require performing the correct action at either $k-1$ or $k+1$ health after $n-1$ actions. However, at the reflecting barrier, where $k+1$ health is unattainable, reaching $k$ health would necessitate arriving at $k$ health after $n-1$ actions. As such, the recursive formulation for $f(n, k)$ can be expressed as:
+    $$f(n, k) = \begin{cases} 
+          f(n-1, k - 1) + f(n-1, k) & k = 20 \\
+          f(n-1, k - 1) + f(n-1, k+1) & 0 \leq k < 20 \\
+          0 & \text{otherwise}
+       \end{cases}$$
+
+    Define $g(n)$ as follows:
+
+    $$g(n) = \sum_{m=0}^n f(m, 0).$$
+
+    When we expand the recursion and compute $g(n)$, without sufficient proof, we claim that
+
+    $$g(n) = \binom{n}{\lfloor\frac{n-10}{2}\rfloor} + O(n^2).$$
 
 
 \subsection{Machine Learning Problem Formulation}
