@@ -1,7 +1,7 @@
 \section{Stepfile Difficulty Model}
 \label{sec:stepfile_difficulty}
 
-Stepfile difficulty has been a recurring topic of debate within the FFR community. The task to define how difficult it is for a player to execute a specific sequence of keystrokes requires manual effort to study shared patterns across stepfiles, making it highly susceptible to player subjectivity. Despite efforts to address this issue through the use of machine learning and artificial intelligence, no definitive solutions have yet been identified. This is largely due to the fact that individual players have varying interpretations of what constitutes a difficult stepfile, informed by their own unique playing objectives and physical abilities. As a result, community resolutions on stepfile difficulty often give rise to biased judgments and disagreements. In order to effectively address these concerns, we must first standardize the definition of stepfile difficulty, then differentiate between the associated objective characteristics from its inherent subjectivity.
+Stepfile difficulty has been a recurring topic of debate within the FFR community. The task to define how difficult it is for a player to execute a specific sequence of keystrokes requires manual effort to study shared patterns across stepfiles, making it highly susceptible to player subjectivity. Despite attempts to resolve this problem through the utilization of machine learning and artificial intelligence, no solutions that integrate the established concepts of stepfile difficulty have been discovered. This is largely due to the fact that individual players have varying interpretations of what constitutes a difficult stepfile, informed by their own unique playing objectives and physical abilities. As a result, community resolutions on stepfile difficulty often give rise to biased judgments and disagreements. In order to effectively address these concerns, we must first standardize the definition of stepfile difficulty, then differentiate between the associated objective characteristics from its inherent subjectivity.
 
 \subsection{Playing Objective Categorizations}
 
@@ -36,7 +36,7 @@ A fundamental aspect of \textit{constant-weighted} playing objectives is the ass
           0 & \text{otherwise}
        \end{cases}$$
 
-    \item Maximizing the score under MS Timing is not specific to FFR, but it involves optimizing the raw score of a stepfile where the assigned rewards favor hits that are closest to Perfect. This method of scoring is implemented in other rhythm games, such as Etterna. The reward function to maximize raw score under MS timing is:
+    \item Maximizing the score under MS Timing is not specific to FFR, but it involves optimizing the raw score of a stepfile where the assigned rewards favor hits that are closest to Perfect. This method of scoring is commonly implemented in other rhythm games, such as Etterna. The reward function to maximize raw score under MS timing is:
 
     $$r(t) = \begin{cases} 
           1- \frac{t}{118} & 0 \leq t \leq 118 \\
@@ -199,7 +199,7 @@ To allow for meaningful comparisons, each playing objective can be represented b
 
 $$J = \displaystyle \int_{-\infty}^{\infty} r(t) dt$$
 
-For example, for score maximizing playing objectives under FFR Judge Windows, we have:
+For example, for score maximizing playing objectives under FFR judgement windows, we have:
 \begin{align*}
 J &= \displaystyle \int_{-\infty}^{\infty} r(t) dt \\
 & = 0.1 \cdot (-83 - (-117)) + 0.5 \cdot (-50 - (-83)) + 1 \cdot (50 - (-50)) + 0.5 \cdot (118 - 50) \\
@@ -243,7 +243,7 @@ The execution of the playing objective is more challenging when $J$ values are l
 
 \vspace{2mm}
 
-These computed judge windows will be utilized in this report to enhance the definition of objective features that are employed in the stepfile difficulty model.
+These computed judge windows will be utilized in this report to enhance the definition of objective features that are employed in the stepfile difficulty model. Further details on integrating judge window size to the objective features associated to the stepfile difficulty model will be discussed later in this section.
 
 \subsubsection{Variable-Weighted Playing Objectives}
 
@@ -260,100 +260,211 @@ The concept of variable-weighted playing objectives posits that the reward attri
 It is worth noting that the aforementioned examples can be generalized as scoring-based objectives, in which the player's aim is to reach a predetermined score. However, depending on the miss and boo requirements of the targeted score, the player must additionally manage the life bar when gameplay is in session. Shown on the right of Figure \ref{fig:gameplay}, the life bar represents a player's remaining life during gameplay. Each successful hit on an arrow contributes to increasing the bar, whereas receiving a Miss or Boo judgement will result in a decrease. Allowing the bar to deplete entirely will result in the conclusion of the game.
 
 \begin{center}
-\includegraphics[width=15cm]{reports/figures/images/gameplay.png}
+\includegraphics[width=10cm]{reports/figures/images/gameplay.png}
 \captionof{figure}{Screenshot of FFR's Gameplay View (upscroll view)}
 \label{fig:gameplay}
 \end{center}
 
-The implementation of the life bar introduces two potential scenarios that require further investigation: situations in which the difficulty of executing these playing objectives remains independent of the life bar, and cases in which it becomes dependent on it.
+While the addition of the life bar in gameplay introduces implementation challenges in measuring the difficulty of these playing objectives, we offer potential solutions for addressing this issue. We commence by positing a theorem and reinforcing it with a heuristic demonstration.
+
+\begin{theorem}
+\label{thm:finiteness}
+Given any targeted score under the variable-weighted playing objective, there are finitely many ways for a player to accomplish this. 
+\end{theorem}
+
+\begin{proof}
+    Let $B$ represent the number of boos in the targeted score and let $N$ represent the number of notes in the stepfile. As boos can only appear between two notes, we can count the number of ways to assort $B$ boos with $N$ notes using stars and bars. Let $\times$ represent boos and $\mid$ represent notes, and arrange the objects sequentially as shown in Figure \ref{fig:starsandbars1}.
 
 \vspace{2mm}
 
-\textit{Case One:} \textbf{Life Bar Independent}
+\begin{center}
+$ \times \mid\times\mid \; \mid \times \times \mid \; \mid \; \mid \times$
+\captionof{figure}{An example of Stars and Bars for $N=6$ notes and $B =5$ boos}
+\label{fig:starsandbars1}
+\end{center}
+
+Because there are a total of $N+B$ objects, there are $\displaystyle \binom{N+B}{B}$ ways to arrange $N$ notes and $B$ boos.
 
 \vspace{2mm}
 
-\textit{Case Two:} \textbf{Life Bar Dependent}
-
-\vspace{2mm}
-In this case, the life bar is the primary factor responsible for the difficulty of accomplishing these scoring-based objectives. Particularly, because Boos are generated at a higher rate compared to other judgements, excessive generation of Boos runs the risk of causing the player to fail the level. Conversely, getting too many hits (e.g. Perfects, Goods, and Averages) can result in missed chances to acquire sufficient Misses and Boos needed to attain the desired score.
+Furthermore, let $H$ represent the number of successfully hit notes and $M$ represent the number of missed notes. Observe that $H + M = N$. Using the previously discussed Stars and Bars analogy, if we let $+$ and $-$ represent hits and misses respectively while ignoring the $\times$, we can replace each $\mid$ with these symbols as shown in Figure \ref{fig:starsandbars2}.
 
 \vspace{2mm}
 
-The life bar can be redefined as a one-dimensional random walk with a reflective barrier at position $20$ and an absorbing barrier at position $0$. All possible states of the life bar can be defined by the particle's position. Starting from position $10$, positive movements of the particle represent successful hits, regardless of the judgement received, while negative movements represent either hitting a non-existent note (Boo) or missing an existing note (Miss). Using the random walk analogy, we begin by proposing the following conjecture:
+Per arrangement from the first iteration of Stars and Bars, there are $\displaystyle\binom{H + M}{M}$ ways to arrange $H$ hits and $M$ misses.
 
-\begin{conjecture}
-Let $g(n)$ represent the number of ways a player can fail passing a stepfile with at most $n$ actions, where actions are either categorized as ``hits" (i.e. Perfects, Goods, Averages) or ``no-hits" (i.e. Miss, Boos). Then,
+\begin{center}
+$ \times \mid\times\mid \; \mid \times \times \mid \; \mid \; \mid \times$ 	\hspace{5mm} $\Longrightarrow$ \hspace{5mm} $\times + \times +  - \times \times ++- \times $
+\captionof{figure}{Replacing $N=6$ notes with $H=4$ hits and $M = 2$ misses}
+\label{fig:starsandbars2}
+\end{center}
 
-$$g(n) \sim \binom{n}{\lfloor\frac{n-10}{2}\rfloor}$$
-\end{conjecture}
+We apply the same argument to conclude that the number of ways to arrange $P$ perfects, $G$ goods, and $A$ averages over $H = P + G + A$ hits is:
+$$\displaystyle \binom{P + G + A}{A}\binom{P+G}{G}$$
 
-Note that Misses and Boos are treated as independent ``no-hits" while Perfects, Goods, and Averages are interpreted as one ``hit". 
+Combining everything together, the number of possible ways a player can score $P$ perfects, $G$ goods, $A$ averages, $M$ misses, and $B$ boos in a stepfile containing $N$ notes, regardless of the life bar's status, is:
+$$\displaystyle \binom{P+G+A+M+B}{B}\binom{P+G+A+M}{M} \binom{P + G + A}{A}\binom{P+G}{G} = \binom{N+B}{P, G, A, M, B}.$$
+
+We can obtain sharper upper bounds when we consider the status of the life bar in our overall counts. Using the same variable definitions, let $J$ represent the number of ``no-hit" actions (i.e. $J = M + B$). Then, our combinatorics problem can be reformulated as:
+$$j_1 + j_2 + \cdots + j_{H + 1} = H + J$$
+
+where $j_i$ represents the number of ``no-hit" actions in the $i$th bin (i.e. number of misses and boos between the $(i-1)$th and $i$th hits). Applying Stars and Bars without any constraints, the number of integer solutions to the above problem is $\displaystyle \binom{H+J}{H}$.
 
 \vspace{2mm}
 
-    Define $f(n, k)$ to represent the number of possible combinations of $n$ actions that result in a total of $k$ health during gameplay. When no actions have been executed ($n = 0$), there exists only one possible scenario in which a total of $k = 10$ health is obtained, while all other possible outcomes for $k$ will be $0$, considering that every player begins with $10$ health. Therefore, 
-    $$f(0, k) = \begin{cases} 
-          1 & k = 10 \\
-          0 & \text{otherwise}
-       \end{cases}$$
-    
-    In the case where $k > 0$ and the barriers are not present, achieving a health level of $k$ after $n$ actions would require performing the correct action at either $k-1$ or $k+1$ health after $n-1$ actions. However, at the reflecting barrier, where $k+1$ health is unattainable, reaching $k$ health would necessitate arriving at $k$ health after $n-1$ actions. As such, the recursive formulation for $f(n, k)$ can be expressed as:
-    $$f(n, k) = \begin{cases} 
-          f(n-1, k - 1) + f(n-1, k) & k = 20 \\
-          f(n-1, k - 1) + f(n-1, k+1) & 0 \leq k < 20 \\
-          0 & \text{otherwise}
-       \end{cases}$$
+As the maximum health in the life bar is $20$, then for all $j_i$, we have $j_i \leq 20$. To enforce the constraint for $k$ $j_i$'s, we need to exclude all solutions with $j_{i_1} > 20$, $j_{i_2} > 20$, $\cdots$, $j_{i_k} > 20$ for $0 \leq i_1 \neq i_2 \neq \cdots \neq i_k \leq \left\lfloor\frac{J}{21} \right\rfloor$ (to ensure that $J - 21k \geq 0$). The above problem under these constraints can be reformulated as:
+$$j_1 + \cdots + (j_{i_1} - 21) + (j_{i_2} - 21) + \cdots + (j_{i_k} - 21) 
++ \cdots + j_{H + 1} = H + J - 21k.$$
 
-    Define $g(n)$ as follows:
+There are $\displaystyle \binom{H+1}{k}$ ways to choose the $k$ $j_i$'s and for each $k$, there are $\displaystyle\binom{H+J-21k}{H}$ solutions.
 
-    $$g(n) = \sum_{m=0}^n f(m, 0).$$
+\vspace{2mm}
 
-    When we expand the recursion and compute $g(n)$, without sufficient proof, we claim that
+By applying the Inclusion–Exclusion principle across all $k-$tuples of $j_i$'s satisfying the above constraint, we get:
+$$\sum_{k =0}^{\left\lfloor \frac{J}{21}\right\rfloor} (-1)^k \binom{H + 1}{k}\binom{H+J-21k}{H}.$$
 
-    $$g(n) = \binom{n}{\lfloor\frac{n-10}{2}\rfloor} + O(n^2).$$
+Therefore, the number of possible ways a player can score $P$ perfects, $G$ goods, $A$ averages, $M$ misses, and $B$ boos in a stepfile containing $N$ notes is:
+$$\sum_{k =0}^{\left\lfloor \frac{M+B}{21}\right\rfloor} (-1)^k \binom{P+G+A + 1}{k}\binom{N+B-21k}{P+G+A}.$$
 
+We claim that this count is an upper bound to the total number of ways a player can actually produce such scores in actual gameplay. This is due to the fact that the count accounts for scenarios where $j_1 \geq 10$ (indicating that the number of misses and boos before hitting the first note is greater than or equal to $10$) is not deemed a failure, when in reality it would result in the conclusion of the game. 
+
+\end{proof}
+
+Let $f$ represent the stepfile difficulty model that maps the set of all input configurations that result in a predetermined desired score $\mathcal{C}_{\text{score}}$ to a positive real number. Hence, following the establishment of finiteness through Theorem \ref{thm:finiteness}, it can be deduced that there exists an input configuration such that $f$ is minimal. This particular configuration can be considered as the most optimal way for a player to achieve the desired score.
+
+\vspace{2mm}
+
+It is assumed that if a player is able to achieve a higher-rated input configuration, then they are also capable of achieving the optimal configuration. Under this assumption, we rate the stepfile difficulty under variable-weighted playing objectives by evaluating the following optimization problem:
+
+\begin{equation*}
+\begin{aligned}
+\min_{c \in \mathcal{C}_{\text{score}}} \quad & f(c)\\
+\textrm{s.t.} \quad & \text{score} = (P, G, A, M, B)  
+\end{aligned}
+\end{equation*}
+
+Currently, the exact criteria for determining the judge window size in variable-weighted playing objectives has yet to be established. Without loss of generality, consider all notes in a given stepfile that are oriented upwards. We will refer to the example shown in Figure \ref{fig:boos} for context.
+
+\begin{center}
+\begin{tikzpicture}
+        \shade[top color=perfect-color, bottom color=perfect-color, opacity=0.5] (-1,-1 +2.5+1.25) rectangle (4,-0.050/0.117 +2.5+1.25);
+\shade[top color=perfect-color, bottom color=perfect-color] (-1,-0.050/0.117 +2.5+1.25) rectangle (4,0.050/0.118 +2.5+1.25);
+\shade[top color=perfect-color, bottom color=perfect-color, opacity=0.5] (-1,0.050/0.118 +2.5+1.25) rectangle (4,0.083/0.118 +2.5+1.25);
+\shade[top color=perfect-color, bottom color=perfect-color, opacity=0.1] (-1,0.083/0.118 +2.5+1.25) rectangle (4,1 +2.5+1.25);
+\node[inner sep=0pt] (up) at (2,0 +2.5+1.25)
+    {\includegraphics[width=1cm]{figures/016/up.png}};
+
+
+
+        \shade[top color=perfect-color, bottom color=perfect-color, opacity=0.5] (-1,-1 +2.5) rectangle (4,-0.050/0.117 +2.5);
+\shade[top color=perfect-color, bottom color=perfect-color] (-1,-0.050/0.117 +2.5) rectangle (4,0.050/0.118 +2.5);
+\shade[top color=perfect-color, bottom color=perfect-color, opacity=0.5] (-1,0.050/0.118 +2.5) rectangle (4,0.083/0.118 +2.5);
+\shade[top color=perfect-color, bottom color=perfect-color, opacity=0.1] (-1,0.083/0.118 +2.5) rectangle (4,1 +2.5);
+\node[inner sep=0pt] (up) at (2,0 +2.5)
+    {\includegraphics[width=1cm]{figures/008/up.png}};
+        
+        \shade[top color=perfect-color, bottom color=perfect-color, opacity=0.5] (-1,-1) rectangle (4,-0.050/0.117);
+\shade[top color=perfect-color, bottom color=perfect-color] (-1,-0.050/0.117) rectangle (4,0.050/0.118);
+\shade[top color=perfect-color, bottom color=perfect-color, opacity=0.5] (-1,0.050/0.118) rectangle (4,0.083/0.118);
+\shade[top color=perfect-color, bottom color=perfect-color, opacity=0.1] (-1,0.083/0.118) rectangle (4,1);
+\node[inner sep=0pt] (up) at (2,0)
+    {\includegraphics[width=1cm]{figures/004/up.png}};
+
+\node[inner sep=0pt] (left) at (0,-1.75)
+    {\includegraphics[width=1cm]{figures/receptor/left.png}};
+\node[inner sep=0pt] (down) at (1,-1.75)
+    {\includegraphics[width=1cm]{figures/receptor/down.png}};
+\node[inner sep=0pt] (up) at (2,-1.75)
+    {\includegraphics[width=1cm]{figures/receptor/up.png}};
+\node[inner sep=0pt] (right) at (3,-1.75)
+    {\includegraphics[width=1cm]{figures/receptor/right.png}};
+
+\draw[opacity=0.5,dashed] (-1, 2.5+0.625) -- (4, 2.5+0.625); 
+\node[inner sep=0pt] at (-1,2.5+0.625) [label=left:{\footnotesize $b_2$}]{};
+\node[inner sep=0pt] (up) at (2,2.5+0.625)
+    {$\textcolor{orange}{\boldsymbol{\times}}$};
+\node[inner sep=0pt] (up) at (2,2.5+0.625+0.01)
+    {$\textcolor{orange}{\boldsymbol{\times}}$};
+\node[inner sep=0pt] (up) at (2,2.5+0.625-0.01)
+    {$\textcolor{orange}{\boldsymbol{\times}}$};
+\node[inner sep=0pt] (up) at (2+0.01,2.5+0.625)
+    {$\textcolor{orange}{\boldsymbol{\times}}$};
+\node[inner sep=0pt] (up) at (2-0.01,2.5+0.625)
+    {$\textcolor{orange}{\boldsymbol{\times}}$};
+
+\draw[opacity=0.5,dashed] (-1, 1.25) -- (4, 1.25); 
+\node[inner sep=0pt] at (-1,1.25) [label=left:{\footnotesize $b_1$}]{};
+\node[inner sep=0pt] (up) at (2,1.25)
+    {$\textcolor{orange}{\boldsymbol{\times}}$};
+\node[inner sep=0pt] (up) at (2,1.25+0.01)
+    {$\textcolor{orange}{\boldsymbol{\times}}$};
+\node[inner sep=0pt] (up) at (2,1.25-0.01)
+    {$\textcolor{orange}{\boldsymbol{\times}}$};
+\node[inner sep=0pt] (up) at (2+0.01,1.25)
+    {$\textcolor{orange}{\boldsymbol{\times}}$};
+\node[inner sep=0pt] (up) at (2-0.01,1.25)
+    {$\textcolor{orange}{\boldsymbol{\times}}$};
+
+\end{tikzpicture}
+\captionof{figure}{Incorporating Boos in Judge Window Size computation}
+\label{fig:boos}
+\end{center}
+
+In the event that a player taps the keyboard at timestamp $b_1$ between the red and blue notes, the engine will record a Boo towards the final score. This is due to the fact that the judge windows for these notes do not overlap, allowing the possibility for the player to hit a Boo. The corresponding judge window size for successfully hitting this Boo is visually represented by the white-colored distance between the two judgment windows.
+
+\vspace{2mm}
+
+Conversely, if a player submits input at timestamp $b_2$ between the blue and yellow notes, the engine will record an early good in the judge window of the yellow note if the blue note was not previously hit, or a late good in the blue note's judge window if it was successfully hit. Given that these windows overlap, there is no opportunity for the player to hit a Boo, resulting in a judge window size of $0$ for this instance.
+
+\vspace{2mm}
+
+In terms of misses, as no action is required on the player's behalf, no judge window sizes are factored in the calculation of the overall difficulty of the stepfile under this playing objective. Essentially, misses can be disregarded as the domain space of all possible configurations assumes that the player will not fail the level.
+
+\vspace{2mm}
+
+Due to the fact that all variable-weighted playing objectives solely focus on players hitting a certain number of notes with different judgments, rather than specifying the exact timing of when to hit them, the evaluation of stepfile difficulty can be determined by finding the optimal configuration that increases the likelihood of achieving the desired judgments. This involves identifying the optimum judge window sizes and computing the overall weighted average once the configuration has been identified.
 
 \subsection{Machine Learning Problem Formulation}
 
-We will begin this section by introducing some definitions and proposing a theorem:
+With a clear distinction made between different interpretations of difficulty, our focus now shifts to formulating the measurement of stepfile difficulty as a machine learning problem using the chosen definition as the de facto standard. In this section, we will define key terms and present a theorem as the basis for our methodology.
+
+\vspace{2mm}
+
+Stepfile features have a significant impact on identifying the factors that contribute to the level's difficulty. Thus, it is essential to utilize these features in constructing a predictive model for estimating stepfile difficulty. These features fall under two distinct categories, namely, objective and subjective.
 
 \begin{itemize}
     \item \textit{Objective stepfile features} refer to characteristics of a stepfile that contain rigid requirements independent of the player's skill level. These may include precise timing requirements for all arrows and the duration of the stepfile. Note that meta stepfile features are not considered objective, as the established definition to differentiate patterns from one another cannot be codified deterministically. 
     \item \textit{Subjective stepfile features} are defined as elements that are primarily centered on the execution of the stepfile and are subject to the player's individual skill level. These features may include factors related to a player's ability to execute the steps accurately, as well as their access to high-quality equipment. For instance, a player with greater stamina is likely to excel at longer stepfiles and may tend to underestimate its level of challenge as a result. 
 \end{itemize}
 
+Using these stepfile features, we propose the following theorem.
+
 \begin{theorem}
 Given a stepfile, the true difficulty rating can be estimated with a machine learning model using the objective stepfile features and the upper echelons of player telemetry.
 \end{theorem}
 
 \begin{proof}
-Let Players $A_1, A_2, \cdots, A_n$ represent $n$ players to provide feedback on the stepfile difficulty of a given stepfile. Each time Player $A_i$ for all $1 \leq i \leq n$ makes an assessment on the difficulty of the stepfile, they rely on both unique characteristics of the stepfile and their individual skill sets
-to justify this claim. Under the assumption that stepfile difficulty is additive, this can captured in the following equation:
 
+Consider a scenario where there are $n$ players, denoted as $A_1, A_2,\ldots,A_n$, tasked with providing feedback on the difficulty of a given stepfile. Each player, $A_i$ for all $1 \leq i \leq n$, relies on the stepfile's distinct attributes and their own personal abilities to justify their assessment. Assuming that the difficulty of the stepfile is additive, we can represent this as the following equation:
 $$\text{Diff}_{\text{obs}}^{(A_i)} = \text{Diff}_{\text{obj}}^{(A_i)} + \text{Diff}_{\text{sub}}^{(A_i)}.$$
 
 Because each player $A_1, A_2, \cdots, A_n$ are exposed to the same step layout in a given stepfile, their unbiased assessments of difficulty are mutually shared. This can be mathematically expressed as follows:
-
 $$\text{Diff}_{\text{obj}} \coloneq \text{Diff}_{\text{obj}}^{(A_1)} = \text{Diff}_{\text{obj}}^{(A_2)} = \cdots = \text{Diff}_{\text{obj}}^{(A_n)}.$$
 
-Define $A = (A_1, \cdots, A_n)$ to represent a community of $n$ players. When we aggregate all $n$ player's difficulty assessments, we can determine the observed difficulty rating of a stepfile subject to community bias:
-
+Let $A = (A_1, \cdots, A_n)$ denote a community of $n$ players. By aggregating the individual difficulty assessments of all $n$ players, we can calculate the observed difficulty rating of a stepfile, taking into consideration the potential impact of community bias. By further refining the aforementioned equation, we arrive at the following equation:
 $$\text{Diff}_{\text{obs}}^{(A)} = \text{Diff}_{\text{obj}} + \text{Diff}_{\text{sub}}^{(A)}.$$
 
-In theory, by obtaining feedback from the entire population regarding the difficulty of a stepfile, with an unlimited sample (i.e. $n \rightarrow \infty$), it may be possible to establish an accurate measurement of difficulty that considers human limitations and reduces the influence of player subjectivity. Therefore, for some constant unknown value $\text{Diff}_{\text{human}}$, we have the following:
+In theory, by obtaining feedback from the entire population regarding the difficulty of a stepfile, with an unlimited sample (i.e. $n \rightarrow \infty$), it may be possible to establish an accurate measurement of difficulty that considers human limitations and reduces the influence of player subjectivity. Therefore, 
+$$\lim_{n \rightarrow \infty} \text{Diff}_{\text{obs}}^{(A)} = \text{Diff}_{\text{true}}\mspace{50mu} \text{and} \mspace{50mu} \lim_{n \rightarrow \infty} \text{Diff}_{\text{sub}}^{(A)} = \text{Diff}_{\text{human}}$$
 
-$$\lim_{n \rightarrow \infty} \text{Diff}_{\text{obs}}^{(A)} = \text{Diff}_{\text{true}}\mspace{50mu} \text{and} \mspace{50mu} \lim_{n \rightarrow \infty} \text{Diff}_{\text{sub}}^{(A)} = \text{Diff}_{\text{human}}.$$
-
-Using the above asymptotics, we can conclude that
+for some unknown constant $\text{Diff}_{\text{human}}$. Based on the aforementioned asymptotic analysis, it can be deduced that
 $$\text{Diff}_{\text{true}} = \text{Diff}_{\text{obj}} + \text{Diff}_{\text{human}}.$$
 \end{proof}
 
-Note that the current difficulty ratings in game are notated as $\text{Diff}_{\text{obs}}^{(A)}$ in the previous proof. Based on this, we propose the following corollary:
+It should be noted that the current difficulty ratings in the game are represented by $\text{Diff}_{\text{obs}}^{(A)}$ in the preceding proof. Based on this, we introduce the following corollary:
 
 \begin{corollary}
-The deviation between $\text{Diff}_{\text{true}}$ and $\text{Diff}_{\text{obs}}^{(A)}$ is largely dependent on subjective features of the stepfile defined by the vocal community. In other words,
-
+The discrepancy between the true difference $\text{Diff}_{\text{true}}$ and the observed difference $\text{Diff}_{\text{obs}}^{(A)}$ is significantly influenced by the subjective characteristics of the stepfile as defined by the vocal community. In other words,
 $$|\text{Diff}_{\text{obs}}^{(A)} - \text{Diff}_{\text{true}}| = |\text{Diff}_{\text{sub}}^{(A)} - \text{Diff}_{\text{human}}|$$
 \end{corollary}
 
@@ -361,28 +472,33 @@ In order to ensure the credibility of the given target values, it is crucial to 
 
 \vspace{2mm}
 
-Instead of attempting to correct data labeling errors, we will use the ratings as targets in our supervised learning problem to estimate the true difficulty $\text{Diff}_{\text{true}}$ by maximizing the explained variation of the objective stepfile features. Doing so enables us to rely less on our inability to control identified biases in our analysis, while creating future opportunities to improve the definition of true difficulty through through continued research on player telemetry and improved feature engineering from available stepfile data.
+Instead of attempting to correct data labeling errors, we will use the ratings as targets in our supervised learning problem to estimate the true difficulty $\text{Diff}_{\text{true}}$ by maximizing the explained variation of the objective stepfile features. Doing so enables us to rely less on our inability to control identified biases in our analysis, while creating future opportunities to improve the definition of true difficulty through continued research on player telemetry and improved feature engineering from available stepfile data.
+\vspace{2mm} 
+
+Although there may be inaccuracies in our predictions due to these aforementioned labeling errors in the target values, we can minimize the severity of this issue by readjusting our train-test split methodology to ensure that both validation and test sets reflect the community's perception of difficulty. This involves determining the most accurate source that closely aligns with the community's perception of difficulty in order to properly evaluate the quality of the model's predictions.
 \vspace{2mm}
 
-Let's assume that there is some relationship between $Y \coloneq  \text{Diff}_{\text{true}}$ and features $X_{\text{obj}} = (X_{\text{obj}}^1, \cdots, X_{\text{obj}}^n)$ which can be written in the very general form:
+Before introducing this source of truth, we will provide a formal explanation of the supervised learning problem as it pertains to predicting stepfile difficulty. Let $f: (X_{\text{obj}}^1, \cdots, X_{\text{obj}}^n) \mapsto \text{Diff}_{\text{true}}$ represent an unknown stepfile difficulty prediction model such that:
+$$\text{Diff}_{\text{true}} = f(X_{\text{obj}}^1, \cdots, X_{\text{obj}}^n) + \epsilon$$
 
-$$Y = f(X_{\text{obj}}) + \epsilon$$
-
-where $f$ is some fixed and unknown function of $X_{\text{obj}}^1, \cdots, X_{\text{obj}}^n$ and $\epsilon$ is a random error term, independent of $X_{\text{obj}}$ and has mean zero. Given our previously stated goal, it is important to note that the error term is specifically formulated to account for the explained variance of stepfile difficulty that can be attributed to inherent human limitations.
-
-\vspace{2mm}
-
-Let $\hat{f}$ be an estimate of $f$ that yields prediction $\hat{Y} = \hat{f}(X_{\text{obj}})$. Assume for a moment that both $\hat{f}$ and $X_{\text{obj}}$ are fixed. Then,
+where $\epsilon$ is a random error term with mean $0$ and independent of all $X_{\text{obj}}^i$. \cite{james2023introduction} This error term is designed to capture the explained variation of features associated to player telemetry. Let $\hat{f}$ represent an estimated version of $f$ that produces the prediction $\hat{\text{Diff}_{\text{true}}} = \hat{f}(X_{\text{obj}}^1, \cdots, X_{\text{obj}}^n)$. Assuming that both $\hat{f}$ and all objective stepfile features are fixed, we have:
 \begin{align*}
-    E(Y - \hat{Y})^2 & = E(f(X_{\text{obj}}) + \epsilon - \hat{f}(X_{\text{obj}}))^2 \\
-    & = [f(X_{\text{obj}}) - \hat{f}(X_{\text{obj}})]^2 + \text{Var}(\epsilon)
+    E(\text{Diff}_{\text{true}} - \hat{\text{Diff}_{\text{true}}})^2 & = E(f(X_{\text{obj}}^1, \cdots, X_{\text{obj}}^n) + \epsilon - \hat{f}(X_{\text{obj}}^1, \cdots, X_{\text{obj}}^n))^2 \\
+    & = [f(X_{\text{obj}}^1, \cdots, X_{\text{obj}}^n) - \hat{f}(X_{\text{obj}}^1, \cdots, X_{\text{obj}}^n)]^2 + \text{Var}(\epsilon)
 \end{align*}
 
-The main objective of our research is to accurately calculate the function $f$, while also minimizing the reducible error $[f(X_{\text{obj}}) - \hat{f}(X_{\text{obj}})]^2$. It is important to acknowledge that the features selected in this study will comply with inferential properties related to stepfile difficulty, as further explained in a subsequent section.
+Similar to typical supervised learning problems, our main objective is to accurately estimate the function $f$, while also minimizing the reducible error $[f(X_{\text{obj}}^1, \cdots, X_{\text{obj}}^n) - \hat{f}(X_{\text{obj}}^1, \cdots, X_{\text{obj}}^n)]^2$. It should be noted that the stepfile features used in the supervised learning framework will be properly identified in a later section of this report.
+
+% In addition to issues mentioned earlier in this report, the evolution of FFR's stepfile difficulty measurement demonstrates the varying perspectives on what constitutes a challenging stepfile. A notable factor contributing to this lack of a consensus is the absence of standardized criteria for determining difficulty. This section aims to establish such standards in order to establish a more reliable and trusted model for evaluating stepfile difficulty, by examining the Contested Difficulties spreadsheet and identifying the difficulty values that hold the most consensus within the FFR community.
+
+\subsection{Contested Difficulty Spreadsheet Analysis}
+
+The Contested Difficulty Spreadsheet, managed by \texttt{Zlyice}, is a collaborative Google Sheets document utilized for tracking proposed changes to stepfile difficulty measurements based on input from users. It is presumed that the individual suggesting a difficulty measurement possesses a degree of knowledge regarding the factors that warrant such a rating for the stepfile. While it must be acknowledged that all proposed measurements are inherently vulnerable to volunteer bias, the process of crowd-sourcing these partial inputs serves to reduce the impact of individual bias on any given stepfile. This approach aims to align the definition of difficulty with the perspectives of the vocal minority within the wider community.
 
 \vspace{2mm}
 
 
+In order to align our model scoring with the prevailing consensus on the quantification of stepfile difficulty within the community, we conduct a thorough analysis of the proposed difficulty levels over the period spanning from 2022 to the present date. This analysis serves as the basis for our development of a train-test split strategy, in which the distribution of proposed difficulties is utilized to allocate our data into appropriately representative training, validation, and test sets.
 
 
 
@@ -415,11 +531,3 @@ The main objective of our research is to accurately calculate the function $f$, 
 
 % In addition to issues mentioned earlier in this report, the evolution of FFR's stepfile difficulty measurement demonstrates the varying perspectives on what constitutes a challenging stepfile. A notable factor contributing to this lack of a consensus is the absence of standardized criteria for determining difficulty. This section aims to establish such standards in order to establish a more reliable and trusted model for evaluating stepfile difficulty, by examining the Contested Difficulties spreadsheet and identifying the difficulty values that hold the most consensus within the FFR community.
 
-\subsection{Contested Difficulty Spreadsheet Analysis}
-
-The Contested Difficulty Spreadsheet, managed by \texttt{Zlyice}, is a collaborative Google Sheets document utilized for tracking proposed changes to stepfile difficulty measurements based on input from users. It is presumed that the individual suggesting a difficulty measurement possesses a degree of knowledge regarding the factors that warrant such a rating for the stepfile. While it must be acknowledged that all proposed measurements are inherently vulnerable to volunteer bias, the process of crowd-sourcing these partial inputs serves to reduce the impact of individual bias on any given stepfile. This approach aims to align the definition of difficulty with the perspectives of the vocal minority within the wider community.
-
-\vspace{2mm}
-
-
-In order to align our model scoring with the prevailing consensus on the quantification of stepfile difficulty within the community, we conduct a thorough analysis of the proposed difficulty levels over the period spanning from 2022 to the present date. This analysis serves as the basis for our development of a train-test split strategy, in which the distribution of proposed difficulties is utilized to allocate our data into appropriately representative training, validation, and test sets.

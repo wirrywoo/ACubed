@@ -5,15 +5,20 @@
 
 \vspace{2mm}
 
-The player base of FFR maintains a consistently robust presence, with several thousand users actively engaging in gameplay every month. Among this devoted community are competitive players hailing from online rhythm games such as \href{https://osu.ppy.sh/}{osu!mania} and \href{https://etternaonline.com/}{Etterna}, with a notable number participating in official tournaments each year. To ensure a positive experience for these players, many systems have been created to objectively measure stepfile difficulty, fairly reward scores based on playing performance, and determine ratings that accurately reflect the player's skill. Although these systems are widely adopted in the community, their design has sparked considerable concerns regarding the reliability and scalability of their skill measurement.
+The player base of FFR maintains a consistently robust presence, with several thousand users actively engaging in gameplay every month. Among this devoted community are competitive players hailing from online rhythm games such as \href{https://osu.ppy.sh/}{osu!mania} and \href{https://etternaonline.com/}{Etterna}, with a notable number participating in official tournaments each year. To ensure a positive experience for these players, many systems have been created in an attempt to objectively measure stepfile difficulty, fairly reward scores based on playing performance, and determine ratings that accurately reflect the player's skill. Although these systems are widely adopted in the community, their design has sparked considerable concerns regarding the reliability and scalability of their skill measurement.
 
 \vspace{2mm}
 
-While it is imperative to consider varying perspectives, it is essential to acknowledge that this analysis incorporates a set of underlying assumptions. Justification for each assumption will be provided, but it is worth noting that the proposed solutions in this paper are not definitive and absolute. As evidenced by \href{https://www.flashflashrevolution.com/vbz/showthread.php?t=153119}{past debates}, alternative approaches based on differing assumptions are welcomed and encouraged. Additionally, unless specified otherwise, it should be noted that all figures presented in this paper are set to the downscroll setting, indicating that the arrows are presumed to move from the top of the screen to the bottom.
+Although examining different viewpoints is crucial, this report restricts its focus to a specific perspective and therefore operates under a set of assumptions in order to narrow down the scope of the problem. Justification for each assumption will be provided, but it is worth noting that the proposed solutions in this paper are not definitive and absolute. 
+Previous discussions have shown that reaching a communal agreement is a needlessly difficult task, and there is limited cooperation within the community, as seen in \href{https://www.flashflashrevolution.com/vbz/showthread.php?t=153119}{prior debates} and \href{https://www.flashflashrevolution.com/vbz/showthread.php?t=149402}{disagreements}. It is suggested that developers tackle these issues by applying their own preferred assumptions, or by utilizing the analysis provided in this paper as a foundational starting point.
+
+\vspace{2mm}
+
+Additionally, unless specified otherwise, it should be noted that all figures presented in this paper are set to the downscroll setting, indicating that the arrows are presumed to move from the top of the screen to the bottom.
 
 \subsection{Overview of FFR's Skill-Based Metrics and Their Shortcomings}
 \subsubsection{Stepfile Difficulty}
-Every stepfile possesses intrinsic levels of challenge concerning the player's execution due to their distinct structural characteristics. However, quantifying this measure continues to be a challenging question. In the initial stages of its development, stepfile difficulty was measured on an integer scale ranging from \texttt{1} to \texttt{12}, with \texttt{1} denoting the easiest and \texttt{12} denoting the most challenging levels in the game. In an effort to improve the representativeness of difficulty in light of a growing number of stepfiles, \texttt{nois-or-e}, \texttt{One Winged Angel}, and \texttt{stavie33} revamped the difficulty scale to encompass a broader range from \texttt{1} to \texttt{120}. This update was \href{https://www.flashflashrevolution.com/vbz/showthread.php?t=124260}{announced on the forums} and has since been adopted as the current difficulty scale in use.
+Every stepfile possesses intrinsic levels of challenge concerning the player's execution due to their distinct structural characteristics. However, quantifying this measure continues to be a challenging question. In the initial stages of its development, stepfile difficulty was measured on an integer scale ranging from \texttt{1} to \texttt{12}, with \texttt{1} denoting the easiest and \texttt{12} denoting the most challenging levels in the game. In order to enhance difficulty assessment in response to the increasing volume of stepfiles in the engine, \texttt{nois-or-e}, \texttt{One Winged Angel}, and \texttt{stavie33} have restructured the difficulty scale to encompass a wider spectrum spanning from \texttt{1} to \texttt{120}. This update was \href{https://www.flashflashrevolution.com/vbz/showthread.php?t=124260}{announced on the forums} and has since been adopted as the current difficulty scale in use.
 
 \vspace{2mm}
 
@@ -22,20 +27,23 @@ To assess the difficulty of new incoming stepfiles in the engine, a team of diff
 \begin{itemize}
 	\item By solely relying on pairwise stepfile comparisons to determine the difficulty rating of an unrated stepfile, other assigned ratings are not considered during comparison, resulting in an inconsistent set of criteria established across stepfiles to define difficulty.
 	\item Proposed difficulty ratings crowdsourced from the vocal minority are inherently subject to self-selection bias and group attribution error by the current process's mechanism design. Consequently, manual stepfile difficulty assignment for easier files is generally less accurate due to higher skill bias in the vocal minority.
-	\item There is an inability to 
-	      predict difficulty at any rate not equal to \texttt{1.0x}, which has recently gained popularity for competitive play within the community.
+    \item It is often challenging to compare two types of patterns in stepfiles due to the lack of a clear basis for drawing such comparisons. This often leads to prematurely brief discussions, in which users reach the incorrect conclusion that it is impossible to compare two stepfiles, despite the fact that this should not necessarily be the case.
 \end{itemize}
 
-Additionally, this current method of determining the difficulty of stepfiles is a manually daunting task, prompting many developers to seek algorithmic methods to measure stepfile difficulty automatically. With the growing advancements in machine learning and artificial intelligence, these methods have become increasingly popular for creating stepfile difficulty models. Recently in 2023, \texttt{Trumpet63} successfully developed an API wrapper incorporating a \href{https://www.flashflashrevolution.com/vbz/showthread.php?t=154255}{trained GRU model} with a mean-squared error of 11, to help estimate the difficulty of new stepfiles in the \href{https://www.flashflashrevolution.com/~velocity/ffrjs/difficulty/}{Difficulty Estimator page}.
+Additionally, this current method of determining the difficulty of stepfiles is a manually daunting task, prompting many developers to seek algorithmic methods to measure stepfile difficulty automatically. With the growing advancements in machine learning and artificial intelligence, these methods have become increasingly popular for creating stepfile difficulty models. Recently in 2023, \texttt{Trumpet63} successfully developed an API incorporating a simple recurrent neural network model with a \href{https://www.flashflashrevolution.com/vbz/showthread.php?t=154255}{training mean-squared error of 10.975}, to help estimate the difficulty of new stepfiles in the \href{https://www.flashflashrevolution.com/~velocity/ffrjs/difficulty/}{Difficulty Estimator page}.
 
 \vspace{2mm}
 
-Although \texttt{Trumpet63}’s model has primarily received positive sentiment from the FFR community, these endeavors continue to face criticism, as there is a general lack of confidence in the model’s ability to accurately capture the multifaceted nature of this issue. This skepticism is further compounded by the lack of transparency in the currently used model, which gives rise to the following concerns:
+Although \texttt{Trumpet63}’s model has primarily received positive sentiment from the FFR community, these endeavors continue to face criticism, as there is a general lack of confidence in the model’s ability to accurately capture the multifaceted nature of this issue. This skepticism is further compounded by the model's inability to scale, which gives rise to the following concerns:
 
 \begin{itemize}
 	\item There are numerous interpretations of stepfile difficulty, making it challenging to establish a standardized definition that is universally accepted by the community.
 	\item There is a subjective component inherent in the concept of difficulty that needs to be decoupled from the overall dataset to appropriately perform model training and inference.
 	\item There is uncertainty on how meta stepfile patterns (e.g. jacks, jumpstream, etc.) can be appropriately defined and integrated as reliable features in model training. 
+	\item There is an inability to 
+	      predict difficulty at any rate not equal to \texttt{1.0x}, which has recently gained popularity for competitive play within the community.
+
+       \item During model inference, the prediction latency required to estimate stepfile difficulty results in inadequate outcomes for both developers and end users due to high memory and storage costs.
 \end{itemize}
 
 Given the progress made in measuring stepfile difficulty and its widespread use as a means of facilitating discussions on player's proficiency, it is evident that this measure holds great significance in the FFR community. Therefore, it is imperative to establish a definitive and thorough understanding of stepfile difficulty, in order to mitigate any further challenges in defining other skill-based metrics.
@@ -78,7 +86,7 @@ Although the notion of AAA equivalency is widely accepted and acknowledged in th
 	\item The current AAA equivalency formula poses challenges in its interpretation, causing many individuals to question the rating they have received.
 \end{itemize}
 
-Several solutions have been proposed on Discord to address the issues identified with the AAA equivalency metric. Proposed by \texttt{Lights}, a potential solution that shows promise suggests incorporating additional weighting in the formula to prevent players from exploiting the metric and inflate their skill ratings, while also accurately recognizing AAA equivalency for players who score above the current threshold of 28 raw goods on some of the most difficult stepfiles in FFR. However, these solutions are still in the process of being investigated and no significant progress has been made thus far.
+Various methods have been suggested on Discord to take into account the criticisms of the AAA equivalency measure. Proposed by \texttt{Lights}, a potential solution that shows promise suggests incorporating additional weighting in the formula to prevent players from exploiting the metric and inflate their skill ratings, while also accurately recognizing AAA equivalency for players who score above the current threshold of 28 raw goods on some of the most difficult stepfiles in FFR. However, these solutions are still in the process of being investigated and no significant progress has been made thus far.
 
 \subsubsection{Skill Rating}
 
@@ -107,7 +115,7 @@ In other words, under this weighting, over 75\% of a player's skill rating is de
 
 \vspace{2mm}
 
-To address some of these challenges, a new approach called \href{https://www.flashflashrevolution.com/ffr/season-1/}{Seasonal Skill Rating} was implemented in conjunction with the established Skill Rating model in 2021. This system was specifically designed to monitor player performance in three-month intervals each year, providing more current data for use in determining official tournament placements. Developed by \texttt{Prawkskunk}, \texttt{XJ-9}, and \texttt{WirryWoo}, the weighting mechanism used in Seasonal Skill Rating calculates a linearly weighted average of a player's top $N$ scores using the formula provided below. For all ranks $r$ satisfying $r \in \{1, 2, \cdots, N\}$, the weight $w := w(r)$ is computed as follows:
+To address some of these challenges, the  \href{https://www.flashflashrevolution.com/ffr/season-1/}{Seasonal Skill Rating} was implemented in conjunction with the established Skill Rating model in 2021. This system was specifically designed to monitor player performance in three-month intervals each year, providing more current data for use in determining official tournament placements. Developed by \texttt{Prawkskunk}, \texttt{XJ-9}, and \texttt{WirryWoo}, the weighting mechanism used in Seasonal Skill Rating calculates a linearly weighted average of a player's top $N$ scores using the formula provided below. For all ranks $r$ satisfying $r \in \{1, 2, \cdots, N\}$, the weight $w := w(r)$ is computed as follows:
 
 \begin{align*}
 	w & = \frac{N - r + 1}{\frac{1}{2}N (N + 1)} 
@@ -698,8 +706,6 @@ The summary of proposed changes is visually represented in the diagram shown in 
 	\item Raw goods will be replaced with score features to more accurately track player performance.
 	\item The AAA equivalency formula will no longer involve stepfile difficulty, but instead will directly incorporate objective stepfile features.
 \end{itemize}
-
-
 \begin{center}
 	\begin{figure}[H]
 		\centering
@@ -766,14 +772,16 @@ Additionally, it is important to note that the Proposed State, as illustrated in
 
 The implementation of this study necessitates the development of a framework for training machine learning models using the expectation-maximization algorithm. Within this framework, the models are optimized concerning their corresponding dependent skill-based metrics based on a predetermined convergence criterion. Further details on this approach will be discussed in Section [TODO], with detailed steps for the technical implementation outlined in Section [TODO].
 
-\vspace{2mm}
+% \vspace{2mm}
 
-In Section \ref{sec:stepfile_difficulty}, we aim to establish a clear definition of stepfile difficulty by addressing the inherent subjectivity of this concept. We will examine various existing interpretations and propose a methodology for estimating difficulty based on these definitions. This process includes creating a data stratification strategy to incorporate player feedback from \texttt{\#difficulty-discussion} in FFR's Official Discord channel within our train-test split, identifying a set of objectively defined features that align with specific gameplay properties, and devising a framework for training and evaluating a time series extrinsic regression model. This model will be used to replicate experiments under varying hyperparameter configurations and considered definitions.
+% In Section \ref{sec:stepfile_difficulty}, we aim to establish a clear definition of stepfile difficulty by addressing the inherent subjectivity of this concept. We will examine various existing interpretations and propose a methodology for estimating difficulty based on these definitions. This process includes creating a data stratification strategy to incorporate player feedback from \texttt{\#difficulty-discussion} in FFR's Official Discord channel within our train-test split, identifying a set of objectively defined features that align with specific gameplay properties, and devising a framework for training and evaluating a time series extrinsic regression model. This model will be used to replicate experiments under varying hyperparameter configurations and considered definitions.
 
-\vspace{2mm}
+% \vspace{2mm}
 
-Our definition of AAA equivalency is consistent with the interpretation of the community. However, in Section [TODO], we propose improvements to the current formula by defining an adjusted raw good count concerning features identified for our stepfile difficulty model. Additionally, we introduce precision and recall as performance-indicative metrics within the realm of competitive gameplay by defining the ``Boo" judge accuracy label as false positives and the ``Miss" judge accuracy label as false negatives.
+% Our definition of AAA equivalency is consistent with the interpretation of the community. However, in Section [TODO], we propose improvements to the current formula by defining an adjusted raw good count concerning features identified for our stepfile difficulty model. Additionally, we introduce precision and recall as performance-indicative metrics within the realm of competitive gameplay by defining the ``Boo" judge accuracy label as false positives and the ``Miss" judge accuracy label as false negatives.
 
-\vspace{2mm}
+% \vspace{2mm}
 
-In Section [TODO], we propose a study advocating for the incorporation of outlier detection techniques to eliminate unrepresentative AAA equivalency scores. We also present a framework for adjusting the value of $N$ depending on the number of stepfiles played. Furthermore, we suggest incorporating Seasonal Skill Ratings to contextualize players' abilities beyond their top-performing scores and evaluate their performance in comparison to Skill Ratings.
+% In Section [TODO], we propose a study advocating for the incorporation of outlier detection techniques to eliminate unrepresentative AAA equivalency scores. We also present a framework for adjusting the value of $N$ depending on the number of stepfiles played. Furthermore, we suggest incorporating Seasonal Skill Ratings to contextualize players' abilities beyond their top-performing scores and evaluate their performance in comparison to Skill Ratings.
+
+\clearpage
