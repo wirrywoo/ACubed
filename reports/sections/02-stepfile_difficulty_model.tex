@@ -1,7 +1,7 @@
 \section{Stepfile Difficulty Model}
 \label{sec:stepfile_difficulty}
 
-Stepfile difficulty has been a recurring topic of debate within the FFR community. The task to define how difficult it is for a player to execute a specific sequence of keystrokes requires manual effort to study shared patterns across stepfiles, making it highly susceptible to player subjectivity. Despite attempts to resolve this problem through the utilization of machine learning and artificial intelligence, no solutions that integrate the established concepts of stepfile difficulty have been discovered. This is largely due to the fact that individual players have varying interpretations of what constitutes a difficult stepfile, informed by their own unique playing objectives and physical abilities. As a result, community resolutions on stepfile difficulty often give rise to biased judgments and disagreements. In order to effectively address these concerns, we must first standardize the definition of stepfile difficulty, then differentiate between the associated objective characteristics from its inherent subjectivity.
+Stepfile difficulty has been a persistent subject of debate within the Flash Flash Revolution (FFR) community. Accurately defining the difficulty level of a specific sequence of keystrokes necessitates careful analysis of shared patterns across various stepfiles, which inherently exposes the process to player subjectivity. Despite attempts to leverage machine learning and artificial intelligence to address this issue, no solutions have successfully integrated the established concepts of stepfile difficulty. This limitation stems primarily from the fact that individual players possess diverse interpretations of what constitutes a difficult stepfile, shaped by their unique playing objectives and physical capabilities. Consequently, community resolutions regarding stepfile difficulty frequently result in biased judgments and disagreements. To effectively address these challenges, it is essential to standardize the definition of stepfile difficulty and to differentiate between the associated objective characteristics and the inherent subjectivity involved in such assessments.
 
 \subsection{Playing Objective Categorizations}
 
@@ -475,10 +475,7 @@ In order to ensure the credibility of the given target values, it is crucial to 
 Instead of attempting to correct data labeling errors, we will use the ratings as targets in our supervised learning problem to estimate the true difficulty $\text{Diff}_{\text{true}}$ by maximizing the explained variation of the objective stepfile features. Doing so enables us to rely less on our inability to control identified biases in our analysis, while creating future opportunities to improve the definition of true difficulty through continued research on player telemetry and improved feature engineering from available stepfile data.
 \vspace{2mm} 
 
-Although there may be inaccuracies in our predictions due to these aforementioned labeling errors in the target values, we can minimize the severity of this issue by readjusting our train-test split methodology to ensure that both validation and test sets reflect the community's perception of difficulty. This involves determining the most accurate source that closely aligns with the community's perception of difficulty in order to properly evaluate the quality of the model's predictions.
-\vspace{2mm}
-
-Before introducing this source of truth, we will provide a formal explanation of the supervised learning problem as it pertains to predicting stepfile difficulty. Let $f: (X_{\text{obj}}^1, \cdots, X_{\text{obj}}^n) \mapsto \text{Diff}_{\text{true}}$ represent an unknown stepfile difficulty prediction model such that:
+We will conclude this section by presenting a formal treatment of the supervised learning problem as applied to the prediction of stepfile difficulty. Let $f: (X_{\text{obj}}^1, \cdots, X_{\text{obj}}^n) \mapsto \text{Diff}_{\text{true}}$ represent an unknown stepfile difficulty prediction model such that:
 $$\text{Diff}_{\text{true}} = f(X_{\text{obj}}^1, \cdots, X_{\text{obj}}^n) + \epsilon$$
 
 where $\epsilon$ is a random error term with mean $0$ and independent of all $X_{\text{obj}}^i$. \cite{james2023introduction} This error term is designed to capture the explained variation of features associated to player telemetry. Let $\hat{f}$ represent an estimated version of $f$ that produces the prediction $\hat{\text{Diff}_{\text{true}}} = \hat{f}(X_{\text{obj}}^1, \cdots, X_{\text{obj}}^n)$. Assuming that both $\hat{f}$ and all objective stepfile features are fixed, we have:
@@ -491,16 +488,37 @@ Similar to typical supervised learning problems, our main objective is to accura
 
 % In addition to issues mentioned earlier in this report, the evolution of FFR's stepfile difficulty measurement demonstrates the varying perspectives on what constitutes a challenging stepfile. A notable factor contributing to this lack of a consensus is the absence of standardized criteria for determining difficulty. This section aims to establish such standards in order to establish a more reliable and trusted model for evaluating stepfile difficulty, by examining the Contested Difficulties spreadsheet and identifying the difficulty values that hold the most consensus within the FFR community.
 
-\subsection{Contested Difficulty Spreadsheet Analysis}
+\subsection{Modifications to Train-Test Split Methodology}
 
-The Contested Difficulty Spreadsheet, managed by \texttt{Zlyice}, is a collaborative Google Sheets document utilized for tracking proposed changes to stepfile difficulty measurements based on input from users. It is presumed that the individual suggesting a difficulty measurement possesses a degree of knowledge regarding the factors that warrant such a rating for the stepfile. While it must be acknowledged that all proposed measurements are inherently vulnerable to volunteer bias, the process of crowd-sourcing these partial inputs serves to reduce the impact of individual bias on any given stepfile. This approach aims to align the definition of difficulty with the perspectives of the vocal minority within the wider community.
+In the previous section, we formulated the machine learning problem under supervised learning using the critical assumption that all target values are labeled correctly. Although there may be inaccuracies in our predictions due to aforementioned labeling errors from the previous section, we can minimize the severity of this issue by appropriately modifying our train-test split methodology.
+\vspace{2mm}
+
+Before delving into the specifics, it is necessary to review the rationale for creating separate training and test datasets for model evaluation. In many machine learning contexts, developers often employ curve fitting techniques to identify a function that minimizes discrepancies between the model's predictions and the actual target values. However, such strategies can lead to overfitting, where the model captures not only the underlying pattern but also the noise in the training data, thereby compromising its ability to generalize to unseen data points.
+
+\vspace{2mm}
+This phenomenon underscores the importance of addressing the bias-variance tradeoff, wherein a balance is sought between a model's capacity to fit the training data and its potential to generalize to new inputs. To mitigate overfitting and evaluate a model’s generalization capability, it is standard practice in supervised learning to partition the dataset into distinct training and test sets. Typically, the test set constitutes 20\% of the entire data, while the remaining 80\% is allocated for training. Such a division ensures that the model's performance can be evaluated on an independent subset, thereby providing a more robust estimate of its predictive accuracy.
+
+\vspace{2mm}
+
+As the sole purpose of the test set is to assess the model's performance, it is customary to create a separate validation set for optimizing the model’s hyperparameters. The size of the validation set is typically comparable to that of the test set. This additional set allows for fine-tuning hyperparameters without compromising the independence of the test set, which remains reserved for final evaluation. Given that the success of the model in this context will be judged based on its ability to predict the difficulty of new stepfiles in FFR, we incorporate sample weights derived from known difficulty ratings. This weighting ensures that both the validation and test sets accurately reflect the community's perception of difficulty, thereby enabling more nuanced evaluations.
+
+\vspace{2mm}
+
+To implement this, it is crucial to identify the most pertinent data sources that align with the community's perception of stepfile difficulty. This alignment ensures that the model’s predictions can be effectively validated against community feedback and expectations.
+
+\vspace{2mm}
+One such key data source is the \href{https://docs.google.com/spreadsheets/d/1Wm1RHG318EK07U4VDXkztKTKnfy9wEOQqWRiTclbCz8/edit?gid=0#gid=0}{Contested Difficulty Spreadsheet}, managed by \texttt{Zlyice}. This collaborative Google Sheets document tracks proposed changes to stepfile difficulty measurements based on community input. Each entry in the spreadsheet reflects a suggested difficulty adjustment, operating under the assumption that contributors possess a certain degree of expertise regarding the technical and subjective factors that justify such ratings. While it is important to recognize that all proposed measurements are subject to volunteer bias, leveraging these crowd-sourced evaluations helps mitigate the influence of individual biases on any given stepfile.
+
+\vspace{2mm}
+By aggregating multiple perspectives, the community-driven approach provides a more balanced representation of perceived difficulty, which can be particularly valuable when establishing a consensus on appropriate difficulty levels. This process of integrating user feedback ensures that the resulting difficulty ratings are more reflective of the collective view, thereby enhancing the reliability of the dataset used for model evaluation and development.
 
 \vspace{2mm}
 
 
-In order to align our model scoring with the prevailing consensus on the quantification of stepfile difficulty within the community, we conduct a thorough analysis of the proposed difficulty levels over the period spanning from 2022 to the present date. This analysis serves as the basis for our development of a train-test split strategy, in which the distribution of proposed difficulties is utilized to allocate our data into appropriately representative training, validation, and test sets.
+To align our model scoring with the prevailing consensus on the quantification of stepfile difficulty within the community, we conduct a comprehensive analysis of proposed difficulty levels over the period spanning from 2022 to the present date. This analysis allows us to capture temporal trends and shifts in difficulty perceptions, ensuring that our data partitioning strategy accurately reflects current community standards. The resulting insights form the foundation of our train-test split strategy, where the distribution of proposed difficulties informs the allocation of data into appropriately representative training, validation, and test sets. By utilizing this distribution-based approach, we ensure that each dataset subset maintains a balance consistent with the overall trend of proposed difficulties, which is critical for achieving robust model performance and reliable generalization to new stepfiles.
 
 
+\vspace{2mm}
 
 
 \textbf{Plan:}
