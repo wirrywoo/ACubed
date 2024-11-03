@@ -21,10 +21,11 @@ endif
 # COMMANDS                                                                      #
 #################################################################################
 
-## Initialize acubed api and ui. Run `make start source=api` to initialize api only.
-start:
-	@if [ "$(source)" = "api" ]; then pipenv run fastapi run $(API_BASE_PATH)/server.py; else pipenv run $(UI_BASE_PATH)/start.sh; fi
+# ## Initialize acubed api and ui. Run `make start source=api` to initialize api only.
+# start:
+# 	@if [ "$(source)" = "api" ]; then pipenv run fastapi run $(API_BASE_PATH)/server.py; else pipenv run $(UI_BASE_PATH)/start.sh; fi
 
+## Standardize all line endings in codebase 
 resolve_line_endings:
 	find . -type f -exec dos2unix {} \;
 
@@ -32,21 +33,23 @@ resolve_line_endings:
 refresh_database: 
 	pipenv run $(PYTHON_INTERPRETER) -m scripts.refresh_database
 
-## Generate visualization
-visualize: 
-	pipenv run $(PYTHON_INTERPRETER) -m scripts.visualize_contested_difficulties
-
 ## Removes acubed environment and factory reset workspace
 uninstall:
 	pipenv --rm
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
 	find . -type d -name '*.egg-info' -exec rm -r {} +
+	find . -type d -name '*.mypy_cache' -exec rm -r {} +
 	find . -type f -name "*.lock" -delete
 
 ## Check lint using pylint
 lint:
-	pipenv run pylint acubed scripts api ui
+	pipenv run pylint acubed scripts
+
+
+## Check types using mypy
+types:
+	pipenv run mypy acubed scripts --config-file .config/mypy.ini
 
 # ## Install local dependencies
 # install_dependencies:

@@ -5,31 +5,30 @@ name = "pypi"
 
 [packages]
 acubed = {file = ".", editable = true}
-click = "*"
-sphinx = "*"
-coverage = "*"
-fastapi = { extras = ["standard"], version = "*" }
 google-api-python-client = "*"
 google-auth-httplib2 = "*"
 google-auth-oauthlib = "*"
 matplotlib = "*"
 numpy = "*"
 onnxruntime = "*"
-polars = "*"
 pymongo = "*"
 python-dotenv = "*"
-ray = { extras = ["tune", "serve"], version = "*" }
 requests = "*"
 requests_toolbelt = "*"
 scikit-learn = "*"
 seaborn = "*"
 skl2onnx = "*"
-skpro = "*"
 sktime = "*"
-streamlit = "*"
 
 [dev-packages]
+click = "*"
+coverage = "*"
+mypy = "*"
+pandas-stubs = "*"
 pylint = "*"
+sphinx = "*"
+types-httplib2 = "*"
+types-requests = "*"
 
 [requires]
 python_version = "3.10"

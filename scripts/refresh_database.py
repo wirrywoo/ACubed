@@ -20,13 +20,13 @@ if __name__ == '__main__':
 
     ## Completes in 0.061 seconds per song (goes through all songs in game)
     ffr = FFRDatabaseConnector(config)
-    ffr.download_charts()
+    stepfiles = ffr.download_charts()
 
     print(f"--- Downloaded Charts: {time.time() - start_time} seconds ---")
 
     db = MongoDBConnector(config)
-    db.upsert(ffr.charts.values())
-    upserts = db.database_changes['upserted']
+    database_changes = db.upsert(stepfiles.values())
+    upserts = database_changes['upserted']
 
     print(f"--- Updated MongoDB database with new charts: {time.time() - start_time} seconds ---")
 

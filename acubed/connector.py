@@ -1,153 +1,168 @@
 """Module providing connector functions to access data sources."""
 
 import json
-import time
 import logging
+import time
 from concurrent.futures import ThreadPoolExecutor
+from operator import itemgetter
+from typing import Dict, Any, List, ValuesView
 
-import httplib2
-import apiclient
-import pandas as pd
-import numpy as np
+import requests
 
 from pymongo import MongoClient
 from pymongo.operations import ReplaceOne
-import requests
-from requests.exceptions import RequestException
-from acubed.preprocessing import FFRChartPreprocesser
 
-class FFRDatabaseConnector(FFRChartPreprocesser):
+from acubed.preprocessing import FFRChartTransformer
 
-    """Connects to FFR API via api_key and downloads all
-    public chart data with additional preprocessing in 2.5 minutes.
-    Stores all results in self.charts.
+
+class FFRDatabaseConnector:
+    """
+    Connects to the FFR API via an API key and downloads all public chart data.
+
+    This process includes additional preprocessing, intended to be completed
+    within 2.5 minutes, and stores all result
+    s in self.charts.
+
+    Parameters:
+        config (Dict[str, Any]): Configuration dictionary to access API on FFR.
     """
 
-    def __init__(self, config):
-        super().__init__()
+    def __init__(self, config: Dict[str, Any]) -> None:
+        """
+        Initialize the FFRDatabaseConnector with the given configuration.
+        """
+        self.ffr_api_key = None
+        if "USERNAME" not in config.keys():
+            raise KeyError("Config dictionary parameter must contain username key.")
+        if "FFR_API_KEY" not in config.keys():
+            raise KeyError("Config dictionary parameter must contain FFR_API_KEY key.")
         for k, v in config.items():
-            setattr(self, k, v)
-        self.thread_pool = 16
-        self.max_retries = 3
-        self.session = requests.Session()
+            setattr(self, k.lower(), v)
+
+        self.thread_pool: int = 16
+        max_retries: int = 3
+        self.session: requests.Session = requests.Session()
         self.session.mount(
-            'https://',
-            requests.adapters.HTTPAdapter(pool_maxsize=self.thread_pool,
-                                        max_retries=self.max_retries,
-                                        pool_block=True)
+            "https://",
+            requests.adapters.HTTPAdapter(
+                pool_maxsize=self.thread_pool,
+                max_retries=max_retries,
+                pool_block=True,
+            ),
         )
-        self.base_api_url = "https://www.flashflashrevolution.com/api/api.php"
-        self.api_url = f"{self.base_api_url}?key={self.FFR_API_KEY}&action={{}}"
-        self._get_chart_urls()
+        base_api_url: str = "https://www.flashflashrevolution.com/api/api.php"
+        self.api_url: str = f"{base_api_url}?key={self.ffr_api_key}&action={{}}"
 
-        self.charts = {}
+        self.song_list: List[Dict[str, Any]] = requests.get(
+            "https://www.flashflashrevolution.com/game/r3/r3-playlist.php",
+            headers={
+                "User-Agent": " ".join(
+                    [
+                        "Mozilla/5.0 (Windows NT 6.1; WOW64)",
+                        "AppleWebKit/537.36 (KHTML, like Gecko)",
+                        "Chrome/56.0.2924.76",
+                        "Safari/537.36",
+                    ]
+                )
+            },
+            timeout=10,
+        ).json()
 
-    def get(self, url):
-        '''Function to fetch results from url'''
+        self.transformer: FFRChartTransformer = FFRChartTransformer()
+
+    def get(self, url: str) -> requests.Response:
+        """
+        Perform a GET request to the specified URL.
+        """
         response = self.session.get(url)
-        logging.info("request was completed in %s seconds [%s]",
-                     response.elapsed.total_seconds(), response.url)
+        logging.info(
+            "request was completed in %s seconds [%s]",
+            response.elapsed.total_seconds(),
+            response.url,
+        )
+
         if response.status_code != 200:
-            logging.error("request failed, error code %s [%s]",
-                          response.status_code, response.url)
+            logging.error(
+                "request failed, error code %s [%s]", response.status_code, response.url
+            )
+
         if 500 <= response.status_code < 600:
             time.sleep(5)
+
         return response
 
-    def download_charts(self, charts = None):
-        '''Download all charts from FFR's API to self.charts'''
-        if charts is None:
-            charts = []
+    def download_charts(self) -> Dict[str, Dict[str, Any]]:
+        """
+        Downloads chart data for each song in the public engine and
+        preprocesses the data.
+        """
+        songs: List[Dict[str, Any]] = []
+        self.song_list = [
+            dict(song, **{"url": self.api_url.format(f"chart&level={song['level']}")})
+            for song in self.song_list
+        ]
+
         with ThreadPoolExecutor(max_workers=self.thread_pool) as executor:
-            for response in list(executor.map(self.get, self.urls)):
+            for song, response in zip(
+                self.song_list,
+                executor.map(self.get, map(itemgetter("url"), self.song_list)),
+            ):
                 if response.status_code == 200:
-                    chart = self.preprocess(json.loads(response.content))
-                    charts.append(chart)
+                    song["chart"] = json.loads(response.content)["chart"]
+                    song = self.transformer.fit_transform(song)
+                    song["chart"] = [note._asdict() for note in song["chart"]]
+                    songs.append(song)
                 else:
                     break
-        self.charts = dict((d['_id'], dict(d, index=index))
-            for (index, d) in enumerate(charts))
 
-    def _get_chart_urls(self, chart_urls = None):
-        '''Utility function to retrieve all chart urls from FFR's API'''
-        if chart_urls is None:
-            chart_urls = []
-        try:
-            for song in requests.get(self.api_url.format('songlist'), timeout=10).json():
-                chart_urls.append(
-                    self.api_url.format(f"chart&level={song['id']}"))
-        except RequestException:
-            pass
-        self.urls = chart_urls
+        return {d["_id"]: dict(d, index=index) for (index, d) in enumerate(songs)}
 
-class MongoDBConnector():
 
-    """Connects to MongoDB Database under a database user (created by WirryWoo)
-    to update collections in MongoDB.
+class MongoDBConnector:
+    """
+    Connects to a MongoDB Database to update collections in MongoDB.
 
-    MongoDB Login Credentials:
-    Username: <FFR Username>
-    Password: <FFR_API_KEY>
+    Parameters:
+        config (Dict[str, Any]): Configuration dictionary to access database in MongoDB.
     """
 
-    def __init__(self, config):
+    def __init__(self, config: Dict[str, Any]) -> None:
+        """
+        Initializes the MongoDBConnector with the provided configuration.
+        """
+        self.username = None
+        self.mongodb_password = None
         for k, v in config.items():
-            setattr(self, k, v)
-        self.cluster = 'atlascluster.hlpskdz.mongodb.net'
-        self.options = "?retryWrites=true&w=majority"
-        self.uri = f"mongodb+srv://{self.USERNAME}:{self.MONGODB_PASSWORD}@{self.cluster}/{self.options}"
+            setattr(self, k.lower(), v)
+        cluster = "atlascluster.hlpskdz.mongodb.net"
+        options = "?retryWrites=true&w=majority"
+        conn_string = f"{self.username}:{self.mongodb_password}"
+        self.uri = f"mongodb+srv://{conn_string}@{cluster}/{options}"
 
-        self.client = MongoClient(self.uri)
-        self.database_changes = None
+        self.client: Any = MongoClient(self.uri)
 
-    def upsert(self, data):
-        '''Upserts stepfile into MongoDB database'''
-        operations = [ReplaceOne(
-            filter={"_id": doc["_id"]},
-            replacement=doc,
-            upsert=True
-        ) for doc in data]
-        results = self.client.get_database(
-            'ffr').charts.bulk_write(operations)
-        self.database_changes = results.bulk_api_result
+    def upsert(self, data: ValuesView) -> Any:
+        """
+        Performs an upsert operation on the MongoDB database.
 
-    def reset(self):
-        '''Clear MongoDB database'''
-        results = self.client.get_database(
-            'ffr').charts.delete_many({})
+        This operation inserts new documents or updates existing documents based
+        on the provided data.
+
+        Args:
+            data (List[Dict[str, Any]]): A list of dictionaries, each containing
+                document data. Each dictionary must have an '_id' field used for
+                identifying existing documents.
+        """
+        operations: List[Any] = [
+            ReplaceOne(filter={"_id": doc["_id"]}, replacement=doc, upsert=True)
+            for doc in data
+        ]
+        results = self.client.get_database("ffr").charts.bulk_write(operations)
+        return results.bulk_api_result
+
+    def reset(self) -> Any:
+        """
+        Deletes all documents from the 'charts' collection in the 'ffr' MongoDB database.
+        """
+        results = self.client.get_database("ffr").charts.delete_many({})
         return results
-
-class FFRContestedDifficultySheet():
-    """Connects to Google Sheets document containing a log of all
-    contested difficulties on FFR. 
-    """
-
-    def __init__(self, api_key):
-        self.max_difficulty = 120
-        self.url = 'https://sheets.googleapis.com/$discovery/rest?version=v4'
-        self.service = apiclient.discovery.build(
-            serviceName = 'sheets',
-            version = 'v4',
-            http = httplib2.Http(),
-            discoveryServiceUrl = self.url,
-            developerKey = api_key,
-            cache_discovery = False
-        )
-        self.spreadsheet_id = '1Wm1RHG318EK07U4VDXkztKTKnfy9wEOQqWRiTclbCz8'
-
-    def extract(self, year):
-        '''Retrieve and preprocess data from Google Sheets'''
-        range_name = f'{year} Difficulty Changes!B3:D250'
-        try:
-            result = self.service.spreadsheets().values().get(
-                spreadsheetId=self.spreadsheet_id, range=range_name).execute()
-            values = result.get('values', [])
-            df = pd.DataFrame(values,
-                columns=['song_name', 'old_diff', 'new_diff'])
-        except apiclient.http.HttpError:
-            return None
-        df.old_diff = pd.to_numeric(df.old_diff, errors='coerce')
-        df.new_diff = pd.to_numeric(df.new_diff, errors='coerce')
-        df.replace(0, np.nan, inplace=True)
-        df.new_diff = df.new_diff.combine_first(df.old_diff)
-        return df[df.new_diff <= self.max_difficulty].dropna()
