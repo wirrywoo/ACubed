@@ -71,8 +71,7 @@ class Note(BaseType):
         if other:
             if ('1', '1') in zip(self.step, other.step):
                 raise ValueError("Cannot add Notes with overlapping step orientations.")
-            else:
-                updated_step = f"{int(self.step, 2) + int(other.step, 2):0{self.num_receptors}b}"
+            updated_step = f"{int(self.step, 2) + int(other.step, 2):0{self.num_receptors}b}"
         else:
             updated_step = self.step
         return Note(time=self.time, step=updated_step)
