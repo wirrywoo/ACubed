@@ -43,6 +43,7 @@ uninstall:
 	pipenv --rm
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
+	find . -type d -name ".ipynb_checkpoints" -delete
 	find . -type d -name '*.egg-info' -exec rm -r {} +
 	find . -type d -name '*.mypy_cache' -exec rm -r {} +
 	find . -type f -name "*.lock" -delete
