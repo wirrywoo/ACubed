@@ -8,6 +8,7 @@ acubed = {file = ".", editable = true}
 google-api-python-client = "*"
 google-auth-httplib2 = "*"
 google-auth-oauthlib = "*"
+ipykernel = "*"
 matplotlib = "*"
 numpy = "*"
 onnxruntime = "*"

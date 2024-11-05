@@ -33,6 +33,11 @@ resolve_line_endings:
 refresh_database: 
 	pipenv run $(PYTHON_INTERPRETER) -m scripts.refresh_database
 
+## Run Jupyter session
+notebook:
+	pipenv run $(PYTHON_INTERPRETER) -m ipykernel install --user --name=acubed
+	pipenv run jupyter notebook
+
 ## Removes acubed environment and factory reset workspace
 uninstall:
 	pipenv --rm

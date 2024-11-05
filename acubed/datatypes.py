@@ -42,12 +42,12 @@ class Note(BaseType):
         cls.num_receptors = num_receptors
 
         if time < 0:
-            raise ValueError("Time parameter must be non-negative")
+            raise ValueError("Time attribute must be non-negative.")
 
         valid_steps = [f"{i:0{cls.num_receptors}b}"
                        for i in range(1, pow(2, cls.num_receptors))]
         if step not in valid_steps:
-            raise ValueError(f"Step parameter must be one of {valid_steps}")
+            raise ValueError(f"Step attribute must be one of {valid_steps}.")
 
         return cast(Note, super().__new__(cls, time, step))
 
@@ -66,10 +66,13 @@ class Note(BaseType):
             return NotImplemented
 
         if self.time != other.time:
-            raise ValueError("Cannot add Notes with different times")
+            raise ValueError("Cannot add two Notes with different times attributes.")
 
         if other:
-            updated_step = f"{int(self.step, 2) + int(other.step, 2):0{self.num_receptors}b}"
+            if ('1', '1') in zip(self.step, other.step):
+                raise ValueError("Cannot add Notes with overlapping step orientations.")
+            else:
+                updated_step = f"{int(self.step, 2) + int(other.step, 2):0{self.num_receptors}b}"
         else:
             updated_step = self.step
         return Note(time=self.time, step=updated_step)
