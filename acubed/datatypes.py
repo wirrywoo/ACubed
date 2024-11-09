@@ -82,6 +82,12 @@ class Note(BaseType):
         """
         return self if other == 0 else self.__add__(other)
 
+    def __repr__(self) -> str:
+        """
+        Returns a string representation of the note.
+        """
+        return f"Note(time={self.time}, step='{self.step}', num_receptors={self.num_receptors})"
+
 class Stepfile:
     """
     A class representing the collection of note events for any $n-$key
