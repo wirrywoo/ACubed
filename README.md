@@ -15,33 +15,40 @@ A model training framework for building stepfile difficulty prediction models fo
 
 - **Github repository**: <https://github.com/stepmanai/ACubed/>
 - **Documentation** <https://stepmanai.github.io/ACubed/>
-
 - **Datasets**: <https://huggingface.co/datasets/stepmanai/ffr_charts>
 
 ## Prerequisites:
 
-Based on [Copier's installation requirements](https://github.com/copier-org/copier?tab=readme-ov-file#installation), this project is natively supported on `Ubuntu 22.04` (`ubuntu:jammy`) and later versions.
+### System Requirements
 
-For Windows users, you can download `Ubuntu 22.04` from the Microsoft Store after setting up Windows Subsystem for Linux (WSL). Instructions provided [here](https://learn.microsoft.com/en-us/windows/wsl/install).
+This project is natively supported on **Ubuntu 22.04** (`ubuntu:jammy`) and later, in accordance with [Copier's installation requirements](https://github.com/copier-org/copier?tab=readme-ov-file#installation).
 
-> **Note**: The following instructions assume you have access to this repository. If you need to request access, please contact us.
+#### Windows Users
 
-## Getting Started with Your Project
+To run this project on Windows, install **Ubuntu 22.04** via the Microsoft Store after setting up **Windows Subsystem for Linux (WSL)**. Follow the official [WSL installation guide](https://learn.microsoft.com/en-us/windows/wsl/install) for step-by-step instructions.
 
-### 1. Clone the Repository to Your Local Environment
+> **Note**: These instructions assume you already have access to this repository. If not, please contact us to request access.
 
-Begin by cloning the repository to a specific location on your local machine.
+## Getting Started
+
+> **Note**: These instructions assume you're setting up this workspace for the very first time. Feel free to skip any steps that are already complete in your environment.
+
+Follow the steps below to set up your local development environment.
+
+### 1. Clone the Repository
+
+Clone this repository to your local machine and navigate into the project directory:
 
 ```bash
 git clone https://github.com/stepmanai/ACubed.git
 cd ACubed
 ```
 
-### 2. Install Required Local Dependencies
+### 2. Install System Dependencies
 
-Next, install the necessary dependencies by executing the following commands:
+Install the required system packages:
 
-> **Note**: You may skip some of these if they are already installed on your machine.
+> **Note**: You can skip any of these if they’re already installed.
 
 ```bash
 sudo apt update
@@ -50,37 +57,73 @@ sudo apt install -y make python3-pip jq git-lfs
 
 ### 3. Install `uv`
 
+Install [`uv`](https://github.com/astral-sh/uv) (a Python packaging tool):
+
 ```bash
 wget -qO- https://astral.sh/uv/install.sh | sh
 source $HOME/.local/bin/env
 ```
 
-### 4. Initialize `git lfs`
+### 4. Set Up Git LFS
+
+Initialize and configure [Git Large File Storage (LFS)](https://git-lfs.com/):
 
 ```bash
 curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
 git lfs install
 ```
 
-### 5. Set Up Your Development Environment
+### 5. Configure SSH for GitHub and Hugging Face
 
-Finally, set up your development environment and install pre-commit hooks with:
+To securely interact with GitHub and Hugging Face using SSH:
+
+1. **Generate a new SSH key (if needed):**
+
+   ```bash
+   ssh-keygen -t ed25519 -C "your_email@example.com"
+   eval "$(ssh-agent -s)"
+   ssh-add ~/.ssh/id_ed25519
+   cat ~/.ssh/id_ed25519.pub
+   ```
+
+2. **Add your SSH key to GitHub:**
+
+   - Go to [GitHub SSH settings](https://github.com/settings/keys)
+   - Click **New SSH key**, paste the contents of your `id_ed25519.pub` file, and save
+
+3. **Add your SSH key to Hugging Face:**
+
+   - Go to [Hugging Face SSH settings](https://huggingface.co/settings/ssh-keys)
+   - Click **Add SSH key**, paste the same public key, and save
+
+4. **Verify the connection:**
+
+   ```bash
+   ssh -T git@github.com
+   ssh -T git@hf.co
+   ```
+
+> **Note**: Ensure your SSH key is loaded into the agent on each login, or use tools like `keychain` or `ssh-agent` configuration in `.bashrc`/`.zshrc`.
+
+### 6. Set Up the Development Environment
+
+Install Python dependencies and pre-commit hooks:
 
 ```bash
 make install
 ```
 
-### 6. Test pre-commit hooks
+### 7. Verify Pre-commit Hooks
 
-Verify that the checks in the pre-commit hooks does not fail by running the following command:
+Run the pre-commit hooks to ensure your environment is properly configured:
 
 ```bash
 uv run pre-commit run -a
 ```
 
-### 7. Initialize Visual Studio Code
+### 8. Launch Visual Studio Code
 
-Run the following command to open up a code editor:
+Open the project in VS Code:
 
 ```bash
 code .
