@@ -4,8 +4,8 @@ install: ## Install the virtual environment, pull submodules, and install the pr
 	@uv sync
 	@sudo apt install -y moreutils
 	@uv run pre-commit install
-	@uv run git submodule init
-	@uv run git submodule update --remote --merge --recursive
+	@uv run scripts/setup_huggingface_structure.sh ffr
+	@uv run git submodule update --init --recursive
 
 .PHONY: ffr-charts
 ffr-charts: ## Upload FFR charts to HuggingFace Datasets repo (TODO: need to restrict this to certain roles in GitHub)
@@ -21,7 +21,7 @@ clean: ## Factory reset workspace in local environment
 	@echo "🧹 Cleaning up build, bytecode, and documentation files..."
 	@find . -type d -name '__pycache__' -exec rm -rf {} +
 	@find . -type f -name '*.py[co]' -delete
-	@rm -rf .venv dist build .mypy_cache .pytest_cache .ruff_cache site acubed.egg-info
+	@rm -rf .venv dist build .mypy_cache .pytest_cache .ruff_cache site acubed.egg-info huggingface
 	@echo "✅ Clean complete."
 
 .PHONY: check
